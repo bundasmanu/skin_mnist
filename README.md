@@ -7,3 +7,5 @@ It also allows the user, to create models and optimize them.
 Some of the models already established by default are: AlexNet and VGGNet networks.
 In addition, training strategies are already established, which may or may not be used, such as: Undersampling, Oversampling and Data Augmentation.
 Finally, it is also provided the possibility for the user to optimize his models, using optimization algorithms such as Particle Swarm Optimization (PSO), or Genetic Algorithm (GA).
+## Class Diagram (base):
+[Architecture Image](breast_Class_Diagram.png)
