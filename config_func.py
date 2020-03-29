@@ -9,6 +9,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import itertools
 import glob
+import math
 
 def getImages(directory):
 
@@ -38,6 +39,37 @@ def addNewColumn_Populate_DataFrame(dataFrame, name_new_column, dataToPopulate):
     try:
 
         dataFrame[name_new_column] = dataToPopulate
+        return dataFrame
+
+    except:
+        raise
+
+def impute_null_values(dataFrame, column, mean=True):
+
+    '''
+    THIS FUNCTION IS USED TO RETRIEVE NULL VALUES ON DATAFRAME
+    :param dataFrame: dataFrame
+    :param column: str --> name of column to impute null values
+    :param mean: boolean (Default = True) --> if True impute with mean of column, if False apply median to null values
+    :return: DataFrame --> changed DataFrame
+    '''
+
+    try:
+
+        series_column = dataFrame[column] ## GET SERIES COLUMN
+
+        if len(series_column) == 0: ## INVALID COLUMN NAME --> len is more quickly than empty
+            return dataFrame
+
+        if mean == True:
+            column_mean = series_column.mean()  ## GET MEAN OF COLUMN
+            mean = math.trunc(column_mean)
+            dataFrame = dataFrame.fillna(mean)
+            return dataFrame
+
+        column_median = series_column.median()
+        median = math.trunc(column_median)
+        dataFrame = dataFrame.fillna(median)
         return dataFrame
 
     except:

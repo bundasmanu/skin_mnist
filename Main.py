@@ -31,5 +31,10 @@ def main():
     print(data.head(5))
     print(data.iloc[0][config.PATH])
 
+    #IMPUTATE NULL VALUES
+    data = config_func.impute_null_values(data, config.AGE, mean=True)
+    print(data.isnull().sum())
+    print(data.head(5))
+
 if __name__ == "__main__":
     main()
