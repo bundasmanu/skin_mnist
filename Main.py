@@ -21,7 +21,7 @@ def main():
     print(images_paths[:5])
 
     data = pd.read_csv(PATIENTS_INFO)
-    print(data.iloc[4])
+    print(data.iloc[0])
     data = data.sort_values(config.IMAGE_ID, ascending=True)
     print(data.head(5))
 
@@ -29,7 +29,7 @@ def main():
     data = config_func.addNewColumn_Populate_DataFrame(data, config.PATH, images_paths)
     data = data.sort_index()
     print(data.head(5))
-    print(data.iloc[4][config.PATH])
+    print(data.iloc[0][config.PATH])
 
 if __name__ == "__main__":
     main()
