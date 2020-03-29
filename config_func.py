@@ -8,7 +8,40 @@ import random
 from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import itertools
+import glob
 
+def getImages(directory):
+
+    '''
+    THIS FUNTION RETRIEVES ALL IMAGES FILES
+    :param directory: str --> dict/*.jpg
+    :return: list of all jpg files
+    '''
+
+    try:
+
+        return glob.glob(directory)
+
+    except:
+        raise
+
+def addNewColumn_Populate_DataFrame(dataFrame, name_new_column, dataToPopulate):
+
+    '''
+    THIS FUNCTION IS USED TO ADD NEW COLUMN TO DATAFRAME, AND POPULATE COLUMN WITH DATA
+    :param dataFrame: dataFrame --> dataFrame to apply changes
+    :param name_new_column: str --> name of new column
+    :param dataToPopulate: List (str) --> strings to populate data
+    :return: dataFrame changed
+    '''
+
+    try:
+
+        dataFrame[name_new_column] = dataToPopulate
+        return dataFrame
+
+    except:
+        raise
 
 def normalize(X_train, X_val, X_test):
 

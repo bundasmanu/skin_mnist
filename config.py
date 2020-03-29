@@ -2,6 +2,22 @@ WIDTH = 50
 HEIGHT = 50
 CHANNELS = 3
 
+## FILES
+INPUT_FOLDER = 'input'
+IMAGES_ACESS = 'images/*.jpg'
+INFO_PATIENTS = 'HAM10000_metadata.csv'
+OTHER_CSV = 'HMNIST_8_8_l.csv'
+
+#DATAFRAME COLUMNS
+LESION_ID = 'lesion_id'
+IMAGE_ID = 'image_id'
+DX = 'dx'
+DX_TYPE = 'dx_type'
+AGE = 'age'
+SEX = 'sex'
+LOCALIZATION = 'localization'
+PATH = 'path'
+
 MULTIPROCESSING = True
 
 X_VAL_ARGS = "X_Val"
