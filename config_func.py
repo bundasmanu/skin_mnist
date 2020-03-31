@@ -10,6 +10,9 @@ import matplotlib.pyplot as plt
 import itertools
 import glob
 import math
+import cv2
+from exceptions import CustomError
+import pandas
 
 def getImages(directory):
 
@@ -44,6 +47,79 @@ def addNewColumn_Populate_DataFrame(dataFrame, name_new_column, dataToPopulate):
     except:
         raise
 
+def getX_Y_Image(image_path : str):
+
+    '''
+    THIS FUCNTION IS USED TO RETIEVE X (pixel RGB VALUES) of an image
+    :param image_path: str --> image path of image
+    :return: X: numpy array --> RGB VALUES OF IMAGE
+    '''
+
+    try:
+
+        image = cv2.imread(image_path)
+        X = cv2.resize(image, (config.WIDTH, config.HEIGHT))
+
+        return X
+
+    except:
+        raise
+
+def getDataFromImages(dataframe : pandas.DataFrame, size):
+
+    '''
+    THIS FUNCTION IS USED TO RETRIEVE X and Y data inherent from all images
+    :param dataframe: Pandas Dataframe --> with all images path's and correspondent targets
+    :param size: integer --> this values is <= than total_images
+            e.g = total images equals to 10000 and user only wants 5000
+            note: stratify option is used to continue with respective perecntage of samples by class
+    :return: X : numpy array --> Data from images (pixels from images)
+    :return Y: numpy array --> targets for each image
+    '''
+
+    try:
+
+        ##GET TOTAL IMAGES
+        number_images = dataframe.shape[0]
+        X = []
+        Y = []
+
+        d = dict(enumerate(dataframe.dx.cat.categories))
+        numeric_targets = dataframe.dx.cat.codes.values
+
+        if size > number_images:
+            raise
+
+        elif size < number_images:
+            ## GET PERCENTAGE OF IMAGES BY CLASS
+            images_by_class = [int(round(((dataframe.loc[dataframe.dx == config.DICT_TARGETS[i], config.DX].count()) / number_images)*size))
+                                   for i in range(len(dataframe.dx.unique()))]
+
+            counter_by_class = [config.DICT_TARGETS[i] for i in range(len(dataframe.dx.unique()))]
+            for i in range(dataframe.shape[0]):
+                target = dataframe.at[i, config.DX] # GET TARGET OF THIS IMAGE
+                index_target_counter = counter_by_class.index(target) # CORRESPONDENT INDEX BETWEEN CLASS AND NUMBER OF PERMITTED IMAGES FOR THIS CLASS
+                if images_by_class[index_target_counter] != 0: ## IF THIS CLASS STILL ALLOWS TO PUT IMAGES
+                    X.append(getX_Y_Image(dataframe.at[i, config.PATH]))
+                    Y.append(numeric_targets[i])
+                    images_by_class[index_target_counter] = images_by_class[index_target_counter] - 1 # DECREASE NUMBER OF IMAGES ALLOWED FOR THIS CLASS
+                else:
+                    continue
+                if all(images_by_class[i] == 0 for i in range(len(images_by_class))): ## IF JOB IS FINISHED --> ALREADY HAVE STRATIFIED IMAGES FOR ALL CLASSES
+                    break
+
+            return np.array(X), np.array(Y)
+
+        else: ## size == number_images, i want all images
+
+            for i in range(dataframe.shape[0]):
+                X.append(getX_Y_Image(dataframe.at[i, config.PATH]))
+                Y.append(numeric_targets[i])
+
+            return np.array(X), np.array(Y)
+    except:
+        raise CustomError.ErrorCreationModel(config.ERROR_ON_GET_DATA)
+
 def impute_null_values(dataFrame, column, mean=True):
 
     '''
@@ -71,6 +147,31 @@ def impute_null_values(dataFrame, column, mean=True):
         median = math.trunc(column_median)
         dataFrame = dataFrame.fillna(median)
         return dataFrame
+
+    except:
+        raise
+
+def resize_images(width, height, data):
+
+    '''
+    :param width: int --> pixel width to resize image
+    :param height: int --> pixel height to resize image
+    :param data: dataframe --> shape ["id", "image_path", "target"]
+    :return x: numpy array --> shape (number images, width, height)
+    :return y: numpy array --> shape (number images, target)
+    '''
+
+    try:
+
+        x = []
+        y = []
+
+        for i in range(len(data[config.ID])):
+            image = cv2.imread(data.at[i, config.IMAGE_PATH])
+            x.append(cv2.resize(image, (width, height)))
+            y.append(data.at[i, config.TARGET])
+
+        return numpy.array(x), numpy.array(y)
 
     except:
         raise

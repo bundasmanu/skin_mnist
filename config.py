@@ -1,5 +1,5 @@
-WIDTH = 50
-HEIGHT = 50
+WIDTH = 90
+HEIGHT = 75
 CHANNELS = 3
 
 ## FILES
@@ -17,6 +17,22 @@ AGE = 'age'
 SEX = 'sex'
 LOCALIZATION = 'localization'
 PATH = 'path'
+
+DICT_TARGETS = (
+    'bkl' ,
+    'akiec' ,
+    'nv' ,
+    'mel' ,
+    'bcc' ,
+    'vasc',
+    'df'
+)
+
+WANTED_IMAGES = 10015
+
+VALIDATION_SPLIT = 0.2
+TEST_SPLIT = 0.2
+RANDOM_STATE = 0
 
 MULTIPROCESSING = True
 
@@ -45,6 +61,7 @@ ERROR_INVALID_NUMBER_ARGS = "\nPlease provide correct number of args"
 ERROR_ON_BUILD = "\nError on building model"
 ERROR_APPEND_STRATEGY = "\nError on appending strategy"
 ERROR_ON_PLOTTING = "\nError on plotting"
+ERROR_ON_GET_DATA = "\nError on retain X and Y data"
 
 #PSO OPTIONS
 TOPOLOGY_FLAG = 0

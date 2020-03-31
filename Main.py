@@ -6,6 +6,7 @@ import pandas as pd
 import config
 import config_func
 import os
+from sklearn.model_selection import train_test_split
 
 def main():
 
@@ -35,6 +36,25 @@ def main():
     data = config_func.impute_null_values(data, config.AGE, mean=True)
     print(data.isnull().sum())
     print(data.head(5))
+    data.dx = data.dx.astype('category')
+    print(data.info())
+
+    # GET IMAGE DATASET X (RGB VALUES) AND Y (TARGETS)
+    # X, Y = config_func.getDataFromImages(dataframe=data, size=config.WANTED_IMAGES)
+    # print(X.shape)
+    # print(Y.shape)
+
+    #GET IMAGE DATASET WITH SPECIFIC SIZE
+    X, Y = config_func.getDataFromImages(dataframe=data, size=2000)
+    print(X.shape)
+    print(Y.shape)
+    number_by_perc = [sum(Y == i) for i in range(len(data.dx.unique()))]
+
+    ## STRATIFY X_TEST, X_VAL AND X_TEST
+    X_train, X_val, y_train, y_val = train_test_split(X, Y, test_size=config.VALIDATION_SPLIT, shuffle=True, stratify=Y,
+                                                      random_state=config.RANDOM_STATE)
+    X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=config.TEST_SPLIT, shuffle=True,
+                                                        stratify=y_train, random_state=config.RANDOM_STATE)
 
 if __name__ == "__main__":
     main()
