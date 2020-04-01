@@ -58,7 +58,7 @@ def getX_Y_Image(image_path : str):
     try:
 
         image = cv2.imread(image_path)
-        X = cv2.resize(image, (config.WIDTH, config.HEIGHT))
+        X = cv2.resize(image, (config.HEIGHT, config.WIDTH), interpolation=cv2.INTER_CUBIC)
 
         return X
 
@@ -190,7 +190,7 @@ def normalize(X_train, X_val, X_test):
 
     try:
 
-        mean = np.mean(X_train,axis=config.STANDARDIZE_AXIS_CHANNELS) #STANDARDIZE BY CHANNELS
+        mean = np.mean(X_train, axis=config.STANDARDIZE_AXIS_CHANNELS) #STANDARDIZE BY CHANNELS
         std = np.std(X_train, axis=config.STANDARDIZE_AXIS_CHANNELS) #STANDARDIZE BY CHANNELS
         X_train = (X_train-mean)/(std+1e-7)
         X_val = (X_val-mean)/(std+1e-7)
@@ -228,8 +228,8 @@ def one_hot_encoding(y_train, y_val, y_test):
     try:
 
         y_train = keras.utils.to_categorical(y_train, config.NUMBER_CLASSES)
-        y_val =  keras.utils.to_categorical(y_val, config.NUMBER_CLASSES)
-        y_test =  keras.utils.to_categorical(y_test, config.NUMBER_CLASSES)
+        y_val = keras.utils.to_categorical(y_val, config.NUMBER_CLASSES)
+        y_test = keras.utils.to_categorical(y_test, config.NUMBER_CLASSES)
 
         return y_train, y_val, y_test
 

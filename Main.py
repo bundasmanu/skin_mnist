@@ -7,9 +7,13 @@ import config
 import config_func
 import os
 from sklearn.model_selection import train_test_split
+import Data
 
 def main():
 
+    print("\n###############################################################")
+    print("##########################DATA PREPARATION#####################")
+    print("###############################################################\n")
     ROOT_DIR = os.getcwd()
     print(ROOT_DIR)
     INPUT_DIR = os.path.join(ROOT_DIR, config.INPUT_FOLDER)
@@ -50,11 +54,25 @@ def main():
     print(Y.shape)
     number_by_perc = [sum(Y == i) for i in range(len(data.dx.unique()))]
 
-    ## STRATIFY X_TEST, X_VAL AND X_TEST
+    # STRATIFY X_TEST, X_VAL AND X_TEST
     X_train, X_val, y_train, y_val = train_test_split(X, Y, test_size=config.VALIDATION_SPLIT, shuffle=True, stratify=Y,
                                                       random_state=config.RANDOM_STATE)
     X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=config.TEST_SPLIT, shuffle=True,
                                                         stratify=y_train, random_state=config.RANDOM_STATE)
+
+    # NORMALIZE DATA
+    X_train, X_val, X_test = config_func.normalize(X_train, X_val, X_test)
+
+    # ONE HOT ENCODING TARGETS
+    y_train, y_val, y_test = config_func.one_hot_encoding(y_train, y_val, y_test)
+
+    # CREATION OF DATA OBJECT
+    data_obj = Data.Data(X_train=X_train, X_val=X_val, X_test=X_test,
+                         y_train=y_train, y_val=y_val, y_test=y_test)
+
+    print("\n###############################################################")
+    print("##########################CLASSIFICATION#######################")
+    print("###############################################################\n")
 
 if __name__ == "__main__":
     main()
