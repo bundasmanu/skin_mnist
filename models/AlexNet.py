@@ -40,7 +40,53 @@ class AlexNet(Model.Model):
                 raise CustomError.ErrorCreationModel(config.ERROR_INVALID_NUMBER_ARGS)
 
             model = Sequential()
-            ##COMPLETE MODEL
+
+            input_shape = (config.WIDTH, config.HEIGHT, config.CHANNELS)
+            model.add(Conv2D(filters=args[0], kernel_size=(5,5), strides=1, input_shape=input_shape,
+                             kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Activation(config.RELU_FUNCTION))
+            model.add(MaxPooling2D(pool_size=(2,2), strides=2))
+            model.add(BatchNormalization())
+            model.add(Dropout(0.10))
+
+            model.add(Conv2D(filters=args[1], kernel_size=(3,3), strides=1, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Activation(config.RELU_FUNCTION))
+            model.add(MaxPooling2D(pool_size=(2,2), strides=2))
+            model.add(BatchNormalization())
+            model.add(Dropout(0.15))
+
+            model.add(Conv2D(filters=args[2], kernel_size=(3,3), strides=1, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Activation(config.RELU_FUNCTION))
+            model.add(MaxPooling2D(pool_size=(2,2), strides=2))
+            model.add(BatchNormalization())
+            model.add(Dropout(0.20))
+
+            model.add(Conv2D(filters=args[3], kernel_size=(3,3), strides=1, padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Activation(config.RELU_FUNCTION))
+            model.add(Conv2D(filters=args[3], kernel_size=(3,3), strides=1, padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Activation(config.RELU_FUNCTION))
+            model.add(MaxPooling2D(pool_size=(2,2), strides=2))
+            model.add(BatchNormalization())
+            model.add(Dropout(0.20))
+
+            model.add(Conv2D(filters=args[4], kernel_size=(3,3), strides=1, padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Activation(config.RELU_FUNCTION))
+            model.add(Conv2D(filters=args[4], kernel_size=(3,3), strides=1, padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Activation(config.RELU_FUNCTION))
+            model.add(MaxPooling2D(pool_size=(2,2), strides=2))
+            model.add(BatchNormalization())
+            model.add(Dropout(0.20))
+
+            model.add(Flatten())
+
+            model.add(Dense(units=args[5], kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Activation(config.RELU_FUNCTION))
+            model.add(BatchNormalization())
+
+            model.add(Dense(config.NUMBER_CLASSES))
+            model.add(Activation(config.SOFTMAX_FUNCTION))
+            model.summary()
+
             return model
 
         except:
@@ -65,7 +111,7 @@ class AlexNet(Model.Model):
             opt = Adam(learning_rate=config.LEARNING_RATE, decay=config.DECAY)
 
             # COMPILE
-            model.compile(optimizer=opt, loss=config.LOSS_BINARY, metrics=[config.ACCURACY_METRIC])
+            model.compile(optimizer=opt, loss=config.LOSS_CATEGORICAL, metrics=[config.ACCURACY_METRIC])
 
             #GET STRATEGIES RETURN DATA, AND IF DATA_AUGMENTATION IS APPLIED TRAIN GENERATOR
             train_generator = None
@@ -79,14 +125,31 @@ class AlexNet(Model.Model):
                 if len(self.StrategyList) > 1: #USER CHOOSE DATA AUGMENTATION OPTION
                     train_generator = self.StrategyList[1].applyStrategy(self.data)
 
-            ## CALLBACKS
-            ## OPTIMIZER
-            ## COMPILE
+            es_callback = EarlyStopping(monitor='loss', patience=6)
+            decrease_callback = ReduceLROnPlateau(monitor='val_loss',
+                                                        patience=2,
+                                                        factor=0.7,
+                                                        mode='min',
+                                                        verbose=1,
+                                                        min_lr=0.000001)
+
+            #CLASS WEIGHTS
+            weights_y_train = config_func.decode_array(y_train)
+            class_weights = class_weight.compute_class_weight('balanced',
+                                                              numpy.unique(weights_y_train),
+                                                              weights_y_train)
 
             if train_generator is None: #NO DATA AUGMENTATION
 
                 history = model.fit(
-                    #NEED TO BE COMPLETED
+                    x=X_train,
+                    y=y_train,
+                    batch_size=config.BATCH_SIZE_ALEX_NO_AUG,
+                    epochs=config.EPOCHS,
+                    validation_data=(self.data.X_val, self.data.y_val),
+                    shuffle=True,
+                    callbacks=[es_callback, decrease_callback],
+                    class_weight=class_weights
                 )
 
                 return history, model
@@ -94,7 +157,14 @@ class AlexNet(Model.Model):
             #ELSE APPLY DATA AUGMENTATION
 
             history = model.fit_generator(
-                # NEED TO BE COMPLETED
+                generator=train_generator,
+                validation_data=(self.data.X_val, self.data.y_val),
+                epochs=config.EPOCHS,
+                steps_per_epoch=X_train.shape[0] / config.BATCH_SIZE_ALEX_AUG,
+                shuffle=True,
+                class_weight=class_weights,
+                verbose=1,
+                callbacks= [es_callback, decrease_callback]
             )
 
             return history, model

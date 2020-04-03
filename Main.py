@@ -5,9 +5,11 @@ from optimizers import GA, PSO, Optimizer, OptimizerFactory
 import pandas as pd
 import config
 import config_func
-import os
 from sklearn.model_selection import train_test_split
 import Data
+import matplotlib.pyplot as plt
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="-1"  #THIS LINE DISABLES GPU OPTIMIZATION
 
 def main():
 
@@ -49,16 +51,23 @@ def main():
     # print(Y.shape)
 
     #GET IMAGE DATASET WITH SPECIFIC SIZE
-    X, Y = config_func.getDataFromImages(dataframe=data, size=2000)
+    X, Y = config_func.getDataFromImages(dataframe=data, size=config.WANTED_IMAGES)
     print(X.shape)
     print(Y.shape)
-    number_by_perc = [sum(Y == i) for i in range(len(data.dx.unique()))]
+    #number_by_perc = [sum(Y == i) for i in range(len(data.dx.unique()))]
 
     # STRATIFY X_TEST, X_VAL AND X_TEST
-    X_train, X_val, y_train, y_val = train_test_split(X, Y, test_size=config.VALIDATION_SPLIT, shuffle=True, stratify=Y,
+    X_train, X_val, y_train, y_val = train_test_split(X, Y, test_size=config.VALIDATION_SPLIT, shuffle=True,
                                                       random_state=config.RANDOM_STATE)
     X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=config.TEST_SPLIT, shuffle=True,
-                                                        stratify=y_train, random_state=config.RANDOM_STATE)
+                                                        random_state=config.RANDOM_STATE)
+
+    print(X_train.shape)
+    print(y_train.shape)
+    print(X_val.shape)
+    print(y_val.shape)
+    print(X_test.shape)
+    print(y_test.shape)
 
     # NORMALIZE DATA
     X_train, X_val, X_test = config_func.normalize(X_train, X_val, X_test)
@@ -66,13 +75,42 @@ def main():
     # ONE HOT ENCODING TARGETS
     y_train, y_val, y_test = config_func.one_hot_encoding(y_train, y_val, y_test)
 
+    print("\n###############################################################")
+    print("##########################CLASSIFICATION#######################")
+    print("###############################################################\n")
+
     # CREATION OF DATA OBJECT
     data_obj = Data.Data(X_train=X_train, X_val=X_val, X_test=X_test,
                          y_train=y_train, y_val=y_val, y_test=y_test)
 
-    print("\n###############################################################")
-    print("##########################CLASSIFICATION#######################")
-    print("###############################################################\n")
+    ## DEFINITION OF NUMBER OF CNN AND DENSE LAYERS
+    args = (5,1)
+
+    # CREATE MODEL FACTORY
+    model_fact = ModelFactory.ModelFactory()
+    alexNet = model_fact.getModel(config.ALEX_NET, data_obj, *args)
+
+    # APPLY STRATEGIES OF TRAIN
+    oversampling = OverSampling.OverSampling()
+    data_augment = DataAugmentation.DataAugmentation()
+    alexNet.addStrategy(oversampling)
+    alexNet.addStrategy(data_augment)
+
+    # VALUES TO POPULATE ON CONV AND DENSE LAYERS
+    filters_cnn = (64, 96, 128, 256, 384)
+    dense_neurons = (64, )
+
+    # APPLY BUILD, TRAIN AND PREDICT
+    model, predictions, history = alexNet.template_method(*(filters_cnn+dense_neurons))
+
+    print(config_func.plot_cost_history(history))
+    print(config_func.plot_accuracy_plot(history))
+    predictions = config_func.decode_array(predictions) #DECODE ONE-HOT ENCODING PREDICTIONS ARRAY
+    y_test_decoded = config_func.decode_array(alexNet.data.y_test)  # DECODE ONE-HOT ENCODING y_test ARRAY
+    report, confusion_mat = config_func.getConfusionMatrix(predictions, y_test_decoded)
+    print(report)
+    plt.figure()
+    config_func.plot_confusion_matrix(confusion_mat, config.DICT_TARGETS)
 
 if __name__ == "__main__":
     main()

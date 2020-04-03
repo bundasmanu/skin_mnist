@@ -13,7 +13,7 @@ class ModelFactory:
 
         :param modelType: str --> with model inherited type user wants --> AlexNet, VGGNet, etc
         :param data: Data object --> data associated with model Object
-        :param args: list of integers --> number os cnn layers and dense layers
+        :param args: list of integers --> number of cnn layers and dense layers
         :return:
         '''
 

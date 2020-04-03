@@ -22,7 +22,13 @@ class DataAugmentation(Strategy.Strategy):
         try:
 
             image_gen = ImageDataGenerator(
-                ## NEED TO BE COMPLETED
+                horizontal_flip=config.HORIZONTAL_FLIP,
+                vertical_flip=config.VERTICAL_FLIP,
+                width_shift_range=config.WIDTH_SHIFT_RANGE,
+                height_shift_range=config.HEIGHT_SHIFT_RANGE,
+                rotation_range=config.ROTATION_RANGE,
+                zoom_range=config.ZOOM_RANGE,
+                brightness_range=config.BRITNESS_RANGE
             )
 
             image_gen.fit(data.X_train, augment=True) #DATA AUGMENTATION
@@ -30,6 +36,8 @@ class DataAugmentation(Strategy.Strategy):
             train_generator = image_gen.flow(
                 data.X_train,
                 data.y_train,
+                shuffle=True,
+                batch_size=config.BATCH_SIZE_ALEX_AUG,
                 ## NEED TO BE COMPLETED
             )
 

@@ -22,25 +22,57 @@ LOCALIZATION = 'localization'
 PATH = 'path'
 
 DICT_TARGETS = (
-    'bkl' ,
     'akiec' ,
-    'nv' ,
-    'mel' ,
     'bcc' ,
-    'vasc',
-    'df'
+    'bkl' ,
+    'df' ,
+    'mel' ,
+    'nv',
+    'vasc'
 )
 
 WANTED_IMAGES = 10015
 
+LEARNING_RATE = 0.01
+DECAY = 1e-6
+
+RELU_FUNCTION = "relu"
+SOFTMAX_FUNCTION = "softmax"
+
 VALIDATION_SPLIT = 0.2
-TEST_SPLIT = 0.2
+TEST_SPLIT = 0.25
 RANDOM_STATE = 0
 
+LOSS_BINARY = "binary_crossentropy"
+LOSS_CATEGORICAL = "categorical_crossentropy"
+
+VALID_PADDING = "valid"
+SAME_PADDING = "same"
+
+ACCURACY_METRIC = "accuracy"
+VALIDATION_ACCURACY = "val_accuracy"
+
+BATCH_SIZE_ALEX_NO_AUG = 64
+BATCH_SIZE_ALEX_AUG = 64
+EPOCHS = 27
 MULTIPROCESSING = True
+SHUFFLE = True
 
 X_VAL_ARGS = "X_Val"
 Y_VAL_ARGS = "y_val"
+
+HORIZONTAL_FLIP = True
+VERTICAL_FLIP = True
+WIDTH_SHIFT_RANGE = 0.1
+HEIGHT_SHIFT_RANGE = 0.1
+ROTATION_RANGE = 10
+ZOOM_RANGE = 0.25
+BRITNESS_RANGE= 0.3
+
+#FLAGS TRAIN STRATEGY
+UNDERSAMPLING = True
+OVERSAMPLING = False
+DATA_AUGMENTATION = False
 
 PSO_OPTIMIZER = "PSO"
 GA_OPTIMIZER = "GA"

@@ -79,7 +79,6 @@ class Model(ABC):
 
             predictions = model.predict(
                 x=self.data.X_test,
-                use_multiprocessing=config.MULTIPROCESSING
             )
 
             #CHECK PREDICTIONS OUTPUT WITH REAL TARGETS

@@ -269,7 +269,7 @@ def getConfusionMatrix(predictions, y_test):
     try:
 
         #CREATE REPORT
-        report = classification_report(y_test, predictions, target_names=config.LIST_CLASSES_NAME)
+        report = classification_report(y_test, predictions, target_names=config.DICT_TARGETS)
 
         #CREATION OF CONFUSION MATRIX
         confusion_mat = confusion_matrix(y_test, predictions)
