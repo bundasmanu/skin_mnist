@@ -84,7 +84,7 @@ def main():
                          y_train=y_train, y_val=y_val, y_test=y_test)
 
     ## DEFINITION OF NUMBER OF CNN AND DENSE LAYERS
-    args = (5,1)
+    args = (6,1)
 
     # CREATE MODEL FACTORY
     model_fact = ModelFactory.ModelFactory()
@@ -97,16 +97,38 @@ def main():
     alexNet.addStrategy(data_augment)
 
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
-    filters_cnn = (64, 96, 128, 256, 384)
-    dense_neurons = (64, )
+    filters_cnn = (16, 16, 24, 32, 64, 96)
+    dense_neurons = (200, )
 
     # APPLY BUILD, TRAIN AND PREDICT
-    model, predictions, history = alexNet.template_method(*(filters_cnn+dense_neurons))
+    #model, predictions, history = alexNet.template_method(*(filters_cnn+dense_neurons))
+
+    ## ---------------------------RESNET APPLICATION ------------------------------------
+
+    ## definition number cnn and dense layers of resnet
+    number_cnn_dense = (9 ,0)
+
+    ## definition filters of resnet
+    initial_conv = (8,)
+    conv2_stage = (16, 24)
+    conv3_stage = (32, 48)
+    conv4_stage = (64, 72)
+    conv5_stage = (96, 128)
+    resnet_args = (
+        initial_conv + conv2_stage + conv3_stage +
+        conv4_stage + conv5_stage
+    )
+
+    resnet = model_fact.getModel(config.RES_NET, data_obj, *number_cnn_dense)
+    resnet.addStrategy(oversampling)
+    resnet.addStrategy(data_augment)
+
+    model, predictions, history = resnet.template_method(*resnet_args)
 
     print(config_func.plot_cost_history(history))
     print(config_func.plot_accuracy_plot(history))
     predictions = config_func.decode_array(predictions) #DECODE ONE-HOT ENCODING PREDICTIONS ARRAY
-    y_test_decoded = config_func.decode_array(alexNet.data.y_test)  # DECODE ONE-HOT ENCODING y_test ARRAY
+    y_test_decoded = config_func.decode_array(resnet.data.y_test)  # DECODE ONE-HOT ENCODING y_test ARRAY
     report, confusion_mat = config_func.getConfusionMatrix(predictions, y_test_decoded)
     print(report)
     plt.figure()

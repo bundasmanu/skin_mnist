@@ -1,6 +1,6 @@
 from . import Model
 from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, BatchNormalization, Dense, Flatten
+from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, BatchNormalization, Dense, Flatten, Conv2DTranspose, UpSampling2D
 import config
 from exceptions import CustomError
 from .Strategies_Train import Strategy
@@ -42,32 +42,35 @@ class AlexNet(Model.Model):
             model = Sequential()
 
             input_shape = (config.WIDTH, config.HEIGHT, config.CHANNELS)
-            model.add(Conv2D(filters=args[0], kernel_size=(5,5), strides=1, input_shape=input_shape,
+            model.add(Conv2D(filters=args[0], kernel_size=(3,3), strides=1, input_shape=input_shape,
                              kernel_regularizer=regularizers.l2(config.DECAY)))
             model.add(Activation(config.RELU_FUNCTION))
             model.add(MaxPooling2D(pool_size=(2,2), strides=2))
             model.add(BatchNormalization())
-            model.add(Dropout(0.10))
+            model.add(Dropout(0.25))
 
             model.add(Conv2D(filters=args[1], kernel_size=(3,3), strides=1, kernel_regularizer=regularizers.l2(config.DECAY)))
             model.add(Activation(config.RELU_FUNCTION))
             model.add(MaxPooling2D(pool_size=(2,2), strides=2))
             model.add(BatchNormalization())
-            model.add(Dropout(0.15))
+            model.add(Dropout(0.25))
 
-            model.add(Conv2D(filters=args[2], kernel_size=(3,3), strides=1, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Conv2D(filters=args[2], kernel_size=(3,3), strides=1, padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
             model.add(Activation(config.RELU_FUNCTION))
             model.add(MaxPooling2D(pool_size=(2,2), strides=2))
             model.add(BatchNormalization())
-            model.add(Dropout(0.20))
+            model.add(Dropout(0.25))
 
-            model.add(Conv2D(filters=args[3], kernel_size=(3,3), strides=1, padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            # model.add(Conv2DTranspose(filters=32, kernel_size=(3,3), padding=config.VALID_PADDING))
+            # model.add(UpSampling2D(interpolation='bilinear'))
+
+            model.add(Conv2D(filters=args[3], kernel_size=(3,3), strides=1, kernel_regularizer=regularizers.l2(config.DECAY)))
             model.add(Activation(config.RELU_FUNCTION))
-            model.add(Conv2D(filters=args[3], kernel_size=(3,3), strides=1, padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Conv2D(filters=args[3], kernel_size=(3,3), strides=1, kernel_regularizer=regularizers.l2(config.DECAY)))
             model.add(Activation(config.RELU_FUNCTION))
             model.add(MaxPooling2D(pool_size=(2,2), strides=2))
             model.add(BatchNormalization())
-            model.add(Dropout(0.20))
+            model.add(Dropout(0.25))
 
             model.add(Conv2D(filters=args[4], kernel_size=(3,3), strides=1, padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
             model.add(Activation(config.RELU_FUNCTION))
@@ -75,11 +78,19 @@ class AlexNet(Model.Model):
             model.add(Activation(config.RELU_FUNCTION))
             model.add(MaxPooling2D(pool_size=(2,2), strides=2))
             model.add(BatchNormalization())
-            model.add(Dropout(0.20))
+            model.add(Dropout(0.25))
+
+            model.add(Conv2D(filters=args[5], kernel_size=(3,3), strides=1, padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Activation(config.RELU_FUNCTION))
+            model.add(Conv2D(filters=args[5], kernel_size=(3,3), strides=1, padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Activation(config.RELU_FUNCTION))
+            model.add(MaxPooling2D(pool_size=(2,2), strides=2))
+            model.add(BatchNormalization())
+            model.add(Dropout(0.50))
 
             model.add(Flatten())
 
-            model.add(Dense(units=args[5], kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Dense(units=args[6], kernel_regularizer=regularizers.l2(config.DECAY)))
             model.add(Activation(config.RELU_FUNCTION))
             model.add(BatchNormalization())
 
@@ -125,7 +136,7 @@ class AlexNet(Model.Model):
                 if len(self.StrategyList) > 1: #USER CHOOSE DATA AUGMENTATION OPTION
                     train_generator = self.StrategyList[1].applyStrategy(self.data)
 
-            es_callback = EarlyStopping(monitor='loss', patience=6)
+            es_callback = EarlyStopping(monitor='val_loss', patience=4)
             decrease_callback = ReduceLROnPlateau(monitor='val_loss',
                                                         patience=2,
                                                         factor=0.7,

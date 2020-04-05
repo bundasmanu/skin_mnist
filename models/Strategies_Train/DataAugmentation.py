@@ -28,7 +28,6 @@ class DataAugmentation(Strategy.Strategy):
                 height_shift_range=config.HEIGHT_SHIFT_RANGE,
                 rotation_range=config.ROTATION_RANGE,
                 zoom_range=config.ZOOM_RANGE,
-                brightness_range=config.BRITNESS_RANGE
             )
 
             image_gen.fit(data.X_train, augment=True) #DATA AUGMENTATION

@@ -1,5 +1,5 @@
-WIDTH = 90
-HEIGHT = 75
+WIDTH = 120
+HEIGHT = 120
 CHANNELS = 3
 
 STANDARDIZE_AXIS_CHANNELS = (0,1,2,3)
@@ -33,7 +33,7 @@ DICT_TARGETS = (
 
 WANTED_IMAGES = 10015
 
-LEARNING_RATE = 0.01
+LEARNING_RATE = 0.001
 DECAY = 1e-6
 
 RELU_FUNCTION = "relu"
@@ -52,11 +52,13 @@ SAME_PADDING = "same"
 ACCURACY_METRIC = "accuracy"
 VALIDATION_ACCURACY = "val_accuracy"
 
-BATCH_SIZE_ALEX_NO_AUG = 64
+BATCH_SIZE_ALEX_NO_AUG = 32
 BATCH_SIZE_ALEX_AUG = 64
-EPOCHS = 27
+EPOCHS = 25
 MULTIPROCESSING = True
 SHUFFLE = True
+
+GLOROT_SEED = 0
 
 X_VAL_ARGS = "X_Val"
 Y_VAL_ARGS = "y_val"
@@ -79,6 +81,7 @@ GA_OPTIMIZER = "GA"
 
 ALEX_NET = "ALEXNET"
 VGG_NET = "VGGNET"
+RES_NET = "RESNET"
 
 #EXCEPTIONS MESSAGES
 ERROR_MODEL_EXECUTION = "\nError on model execution"
@@ -97,6 +100,8 @@ ERROR_ON_BUILD = "\nError on building model"
 ERROR_APPEND_STRATEGY = "\nError on appending strategy"
 ERROR_ON_PLOTTING = "\nError on plotting"
 ERROR_ON_GET_DATA = "\nError on retain X and Y data"
+ERROR_ON_IDENTITY_BLOCK ="\nError on modelling identity block, please check the problem"
+ERROR_ON_CONV_BLOCK ="\nError on modelling convolutional block, please check the problem"
 
 #PSO OPTIONS
 TOPOLOGY_FLAG = 0
