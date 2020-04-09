@@ -13,6 +13,9 @@ import math
 import cv2
 from exceptions import CustomError
 import pandas
+from keras.models import Model as mp
+from keras.layers import Average
+from models import Model
 
 def getImages(directory):
 
@@ -356,3 +359,90 @@ def plot_confusion_matrix(cm, classes,
 
 def lr_scheduler(epoch):
     return config.LEARNING_RATE * (0.5 ** (epoch // config.DECAY))
+
+def defineMask(maskValues):
+
+    '''
+    THIS FUNCTION IS USED TO CREATE BLACK/WHITE MASKS TO AN IMAGE
+    :param maskValues: numpy array --> predicted image mask values (pixel)
+    :return: black/white mask corresponding to the image predicted defined before (on model.predict --> to specific image)
+    '''
+
+    try:
+
+
+        for i in range(maskValues.shape[0]):
+            for j in range(maskValues.shape[1]):
+                if maskValues[i][j] > 0.5:
+                    maskValues[i][j] = 1
+                else:
+                    maskValues[i][j] = 0
+
+        return maskValues
+
+    except:
+        raise
+
+def concate_image_mask(image, mask):
+
+    try:
+
+        ## reshape to 2d
+        mask = np.array(mask.reshape(config.WIDTH, config.HEIGHT), dtype=np.uint8)
+
+        ## bitwise image and mask
+        res = cv2.bitwise_and(image, image, mask=mask)
+
+        return res
+
+    except:
+        raise
+
+def ensemble(models):
+
+    '''
+    THIS FUNCTION IS USED TO ENSEMBLE OUTPUT OF A LIST OF MODELS, CONSIDERING ITS AVERAGE
+    :param models: List Models : models used (AlexNet, VGGNet, ResNet)
+    :return: model: model with average outputs of all models considered
+    '''
+
+    try:
+
+        ## get outputs of each model
+        models_out = [i.outputs[0] for i in models]
+
+        ## get average of each model (ensemble)
+        average = Average() (models_out)
+
+        ## define model with new outputs
+        input_model = (config.WIDTH, config.HEIGHT, config.CHANNELS)
+        model = mp(input_model, average, name='ensemble')
+
+        return model
+
+    except:
+        raise
+
+def print_final_results(model: Model.Model, predictions, history):
+
+    '''
+    THIS FUNCTION IS USED TO PRINT ANND PLOT FINAL RESULTS OF MODEL EVALUATION
+    :param model: Model.Model : type of model (AlexNet, VGGNet, ResNet)
+    :param predictions: numpy array : predictions of model
+    :param history: History.history : history of train (validation and train along epochs)
+    :return: nothing only print's and plot's
+    '''
+
+    try:
+
+        print(plot_cost_history(history))
+        print(plot_accuracy_plot(history))
+        predictions = decode_array(predictions)  # DECODE ONE-HOT ENCODING PREDICTIONS ARRAY
+        y_test_decoded = decode_array(model.data.y_test)  # DECODE ONE-HOT ENCODING y_test ARRAY
+        report, confusion_mat = getConfusionMatrix(predictions, y_test_decoded)
+        print(report)
+        plt.figure()
+        plot_confusion_matrix(confusion_mat, config.DICT_TARGETS)
+
+    except:
+        raise

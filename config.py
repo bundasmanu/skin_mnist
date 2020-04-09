@@ -1,5 +1,5 @@
-WIDTH = 120
-HEIGHT = 120
+WIDTH = 128
+HEIGHT = 128
 CHANNELS = 3
 
 STANDARDIZE_AXIS_CHANNELS = (0,1,2,3)
@@ -10,6 +10,10 @@ INPUT_FOLDER = 'input'
 IMAGES_ACESS = 'images/*.jpg'
 INFO_PATIENTS = 'HAM10000_metadata.csv'
 OTHER_CSV = 'HMNIST_8_8_l.csv'
+UNET_WIGHTS_PATH = INPUT_FOLDER+'/unet-weights/unet_100_epoch.h5'
+MASKS_FOLDER = 'masks'
+PREDICTIONS_MASKS_TRAIN = 'predictions_masks_train.bin'
+TEMP_ARRAYS = 'temp_arrays/' + PREDICTIONS_MASKS_TRAIN
 
 #DATAFRAME COLUMNS
 LESION_ID = 'lesion_id'
@@ -33,11 +37,12 @@ DICT_TARGETS = (
 
 WANTED_IMAGES = 10015
 
-LEARNING_RATE = 0.001
+LEARNING_RATE = 0.01
 DECAY = 1e-6
 
 RELU_FUNCTION = "relu"
 SOFTMAX_FUNCTION = "softmax"
+SIGMOID_FUNCTION = "sigmoid"
 
 VALIDATION_SPLIT = 0.2
 TEST_SPLIT = 0.25
@@ -53,8 +58,8 @@ ACCURACY_METRIC = "accuracy"
 VALIDATION_ACCURACY = "val_accuracy"
 
 BATCH_SIZE_ALEX_NO_AUG = 32
-BATCH_SIZE_ALEX_AUG = 64
-EPOCHS = 25
+BATCH_SIZE_ALEX_AUG = 32
+EPOCHS = 20
 MULTIPROCESSING = True
 SHUFFLE = True
 
@@ -82,6 +87,9 @@ GA_OPTIMIZER = "GA"
 ALEX_NET = "ALEXNET"
 VGG_NET = "VGGNET"
 RES_NET = "RESNET"
+U_NET = "UNET"
+
+FLAG_SEGMENT_IMAGES = 0
 
 #EXCEPTIONS MESSAGES
 ERROR_MODEL_EXECUTION = "\nError on model execution"
@@ -102,6 +110,7 @@ ERROR_ON_PLOTTING = "\nError on plotting"
 ERROR_ON_GET_DATA = "\nError on retain X and Y data"
 ERROR_ON_IDENTITY_BLOCK ="\nError on modelling identity block, please check the problem"
 ERROR_ON_CONV_BLOCK ="\nError on modelling convolutional block, please check the problem"
+ERROR_ON_UNET_STRATEGY = "\nError on U-Net strategy applying"
 
 #PSO OPTIONS
 TOPOLOGY_FLAG = 0
@@ -117,3 +126,10 @@ TOURNAMENT_SIZE = 100
 INDPB = 0.6
 CXPB = 0.4
 MUTPB = 0.2
+
+## weight load files
+UNET_WEIGHTS_100 = 'unet_100_epoch.h5'
+UNET_BUNET_WEIGHTS = 'weight_isic18.hdf5'
+
+## u-net backbone
+BACKBONE = 'resnet34'

@@ -106,7 +106,7 @@ class ResNet(Model.Model):
             if trainedModel != None:
                 return trainedModel
 
-            input_shape = (config.WIDTH, config.HEIGHT, config.CHANNELS)
+            input_shape = (config.HEIGHT, config.WIDTH, config.CHANNELS)
             input_shape = Input(input_shape)
 
             X = ZeroPadding2D((3, 3))(input_shape)
@@ -144,7 +144,7 @@ class ResNet(Model.Model):
             ## finally model creation
             model = mp(inputs=input_shape, outputs=X)
             model.summary()
-            plot_model(model, show_shapes=True, to_file='residual_module.png')
+            #plot_model(model, show_shapes=True, to_file='residual_module.png')
 
             return model
 

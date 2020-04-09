@@ -8,7 +8,9 @@ import config_func
 from sklearn.model_selection import train_test_split
 import Data
 import matplotlib.pyplot as plt
+import cv2
 import os
+import numpy as np
 os.environ["CUDA_VISIBLE_DEVICES"]="-1"  #THIS LINE DISABLES GPU OPTIMIZATION
 
 def main():
@@ -45,11 +47,6 @@ def main():
     data.dx = data.dx.astype('category')
     print(data.info())
 
-    # GET IMAGE DATASET X (RGB VALUES) AND Y (TARGETS)
-    # X, Y = config_func.getDataFromImages(dataframe=data, size=config.WANTED_IMAGES)
-    # print(X.shape)
-    # print(Y.shape)
-
     #GET IMAGE DATASET WITH SPECIFIC SIZE
     X, Y = config_func.getDataFromImages(dataframe=data, size=config.WANTED_IMAGES)
     print(X.shape)
@@ -57,10 +54,12 @@ def main():
     #number_by_perc = [sum(Y == i) for i in range(len(data.dx.unique()))]
 
     # STRATIFY X_TEST, X_VAL AND X_TEST
-    X_train, X_val, y_train, y_val = train_test_split(X, Y, test_size=config.VALIDATION_SPLIT, shuffle=True,
+    indexes = np.arange(X.shape[0])
+    X_train, X_val, y_train, y_val, indeces_train, indices_val = train_test_split(X, Y, indexes, test_size=config.VALIDATION_SPLIT, shuffle=True,
                                                       random_state=config.RANDOM_STATE)
-    X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=config.TEST_SPLIT, shuffle=True,
-                                                        random_state=config.RANDOM_STATE)
+    indexes = indeces_train
+    X_train, X_test, y_train, y_test, indices_train, indices_test = train_test_split(X_train, y_train, indexes, test_size=config.TEST_SPLIT,
+                                                        shuffle=True, random_state=config.RANDOM_STATE)
 
     print(X_train.shape)
     print(y_train.shape)
@@ -68,6 +67,47 @@ def main():
     print(y_val.shape)
     print(X_test.shape)
     print(y_test.shape)
+
+
+    if config.FLAG_SEGMENT_IMAGES == 1:
+        ## ---------------------------U-NET APPLICATION ------------------------------------
+        dataset = Data.Data(X_train=X_train, X_val=X_val, X_test=X_test,
+                         y_train=y_train, y_val=y_val, y_test=y_test)
+        unet_args = (0, 0) # args doesn't matter --> any tuple is valid here, only in U-Net model
+
+        fact = ModelFactory.ModelFactory()
+        unet = fact.getModel(config.U_NET, dataset, *unet_args) # args doesn't matter
+
+        ## check save and load predictions array to file
+        PREDICTIONS_TEMP_FILE_PATH = os.path.join(INPUT_DIR, config.TEMP_ARRAYS)
+        if os.path.exists(PREDICTIONS_TEMP_FILE_PATH):
+            with open(PREDICTIONS_TEMP_FILE_PATH, 'rb') as f:
+                predictions = np.load(f)
+        else: ## if not exists
+            with open(PREDICTIONS_TEMP_FILE_PATH, 'wb') as f:
+                model, predictions, history = unet.template_method()
+                predictions = np.array(predictions) ## transform list to numpy array
+                np.save(f, predictions)
+
+        ## create folder if not exists
+        masks_path_folder = os.path.join(INPUT_DIR, config.MASKS_FOLDER)
+        if not os.path.exists(masks_path_folder):
+            os.makedirs(masks_path_folder)
+        if not os.listdir(masks_path_folder): ## if folder is empty (no images inside)
+            ## insert mask images in mask folder
+            for i in range(predictions.shape[0]):
+                cv2.imwrite(os.path.join(masks_path_folder, data.at[indices_train[i], config.IMAGE_ID]+'.jpg'), predictions[i])
+
+        # plt.figure(figsize=(16, 16))
+        # plt.imshow(cv2.cvtColor(self.data.X_train[2], cv2.COLOR_BGR2RGB))
+        # plt.title('Original Image')
+        # plt.show()
+        # plt.imshow(mask, plt.cm.binary_r)
+        # plt.title('Binary Mask')
+        # plt.show()
+        # plt.imshow(cv2.cvtColor(concatenated_mask, cv2.COLOR_BGR2RGB))
+        # plt.title('Segmented Image')
+        # plt.show()
 
     # NORMALIZE DATA
     X_train, X_val, X_test = config_func.normalize(X_train, X_val, X_test)
@@ -83,25 +123,56 @@ def main():
     data_obj = Data.Data(X_train=X_train, X_val=X_val, X_test=X_test,
                          y_train=y_train, y_val=y_val, y_test=y_test)
 
+    ## INSTANCE OF MODEL FACTORY
+    model_fact = ModelFactory.ModelFactory()
+
+    ## STRATEGIES OF TRAIN INSTANCES
+    oversampling = OverSampling.OverSampling()
+    data_augment = DataAugmentation.DataAugmentation()
+
+    ## ---------------------------ALEXNET APPLICATION ------------------------------------
+
     ## DEFINITION OF NUMBER OF CNN AND DENSE LAYERS
     args = (6,1)
 
-    # CREATE MODEL FACTORY
-    model_fact = ModelFactory.ModelFactory()
+    # CREATE MODEL
     alexNet = model_fact.getModel(config.ALEX_NET, data_obj, *args)
 
     # APPLY STRATEGIES OF TRAIN
-    oversampling = OverSampling.OverSampling()
-    data_augment = DataAugmentation.DataAugmentation()
-    alexNet.addStrategy(oversampling)
-    alexNet.addStrategy(data_augment)
+    #alexNet.addStrategy(oversampling)
+    #alexNet.addStrategy(data_augment)
+
+    # VALUES TO POPULATE ON CONV AND DENSE LAYERS
+    filters_cnn = (96, 96, 72, 72, 96, 96)
+    dense_neurons = (28, )
+
+    # APPLY BUILD, TRAIN AND PREDICT
+    model, predictions, history = alexNet.template_method(*(filters_cnn+dense_neurons))
+
+    ## PLOT FINAL RESULTS
+    config_func.print_final_results(alexNet, predictions, history)
+
+    ## ---------------------------VGGNET APPLICATION ------------------------------------
+
+    ## DEFINITION OF NUMBER OF CNN AND DENSE LAYERS
+    vggLayers = (4, 1)
+
+    ## GET VGGNET MODEL
+    vggnet = model_fact.getModel(config.VGG_NET, data_obj, *vggLayers)
+
+    ## ATTRIBUTION OS TRAIN STRATEGIES
+    vggnet.addStrategy(oversampling)
+    vggnet.addStrategy(data_augment)
 
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
     filters_cnn = (16, 16, 24, 32, 64, 96)
-    dense_neurons = (200, )
+    dense_neurons = (14, )
 
     # APPLY BUILD, TRAIN AND PREDICT
-    #model, predictions, history = alexNet.template_method(*(filters_cnn+dense_neurons))
+    #model, predictions, history = vggnet.template_method(*(filters_cnn+dense_neurons))
+
+    ## PLOT FINAL RESULTS
+    #config_func.print_final_results(vggnet, predictions, history)
 
     ## ---------------------------RESNET APPLICATION ------------------------------------
 
@@ -109,30 +180,31 @@ def main():
     number_cnn_dense = (9 ,0)
 
     ## definition filters of resnet
-    initial_conv = (8,)
-    conv2_stage = (16, 24)
-    conv3_stage = (32, 48)
-    conv4_stage = (64, 72)
-    conv5_stage = (96, 128)
+    initial_conv = (128,)
+    conv2_stage = (64, 96)
+    conv3_stage = (96, 128)
+    conv4_stage = (128, 196)
+    conv5_stage = (196, 248)
     resnet_args = (
         initial_conv + conv2_stage + conv3_stage +
         conv4_stage + conv5_stage
     )
 
+    ## GET MODEL AND DEFINE STRATEGIES
     resnet = model_fact.getModel(config.RES_NET, data_obj, *number_cnn_dense)
     resnet.addStrategy(oversampling)
     resnet.addStrategy(data_augment)
 
-    model, predictions, history = resnet.template_method(*resnet_args)
+    # APPLY BUILD, TRAIN AND PREDICT
+    #model, predictions, history = resnet.template_method(*resnet_args)
 
-    print(config_func.plot_cost_history(history))
-    print(config_func.plot_accuracy_plot(history))
-    predictions = config_func.decode_array(predictions) #DECODE ONE-HOT ENCODING PREDICTIONS ARRAY
-    y_test_decoded = config_func.decode_array(resnet.data.y_test)  # DECODE ONE-HOT ENCODING y_test ARRAY
-    report, confusion_mat = config_func.getConfusionMatrix(predictions, y_test_decoded)
-    print(report)
-    plt.figure()
-    config_func.plot_confusion_matrix(confusion_mat, config.DICT_TARGETS)
+    ## PLOT FINAL RESULTS
+    #config_func.print_final_results(resnet, predictions, history)
+
+    ## --------------------------- ENSEMBLE OF MODELS ------------------------------------
+
+    ## get weights of all methods from files
+    ##call ensemble method
 
 if __name__ == "__main__":
     main()

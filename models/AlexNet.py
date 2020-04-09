@@ -86,7 +86,7 @@ class AlexNet(Model.Model):
             model.add(Activation(config.RELU_FUNCTION))
             model.add(MaxPooling2D(pool_size=(2,2), strides=2))
             model.add(BatchNormalization())
-            model.add(Dropout(0.50))
+            model.add(Dropout(0.35))
 
             model.add(Flatten())
 
