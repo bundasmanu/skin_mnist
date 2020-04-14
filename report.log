@@ -19,3 +19,11 @@
 2020-04-07 17:50:27,768 - matplotlib.image - WARNING - Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
 2020-04-07 18:19:41,712 - matplotlib.image - WARNING - Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
 2020-04-07 18:19:42,568 - matplotlib.image - WARNING - Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
+2020-04-14 17:22:29,590 - tensorflow - WARNING - Tensor._shape is private, use Tensor.shape instead. Tensor._shape will eventually be removed.
+2020-04-14 17:22:29,652 - tensorflow - WARNING - Tensor._shape is private, use Tensor.shape instead. Tensor._shape will eventually be removed.
+2020-04-14 17:22:48,628 - tensorflow - WARNING - Tensor._shape is private, use Tensor.shape instead. Tensor._shape will eventually be removed.
+2020-04-14 17:22:48,653 - tensorflow - WARNING - Tensor._shape is private, use Tensor.shape instead. Tensor._shape will eventually be removed.
+2020-04-14 17:22:54,123 - tensorflow - WARNING - Tensor._shape is private, use Tensor.shape instead. Tensor._shape will eventually be removed.
+2020-04-14 17:22:54,154 - tensorflow - WARNING - Tensor._shape is private, use Tensor.shape instead. Tensor._shape will eventually be removed.
+2020-04-14 17:23:02,028 - tensorflow - WARNING - Tensor._shape is private, use Tensor.shape instead. Tensor._shape will eventually be removed.
+2020-04-14 17:23:02,044 - tensorflow - WARNING - Tensor._shape is private, use Tensor.shape instead. Tensor._shape will eventually be removed.

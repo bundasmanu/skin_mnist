@@ -9,9 +9,11 @@ from sklearn.model_selection import train_test_split
 import Data
 import matplotlib.pyplot as plt
 import cv2
+from keras.models import load_model
+import keras
 import os
 import numpy as np
-os.environ["CUDA_VISIBLE_DEVICES"]="-1"  #THIS LINE DISABLES GPU OPTIMIZATION
+#os.environ["CUDA_VISIBLE_DEVICES"]="-1"  #THIS LINE DISABLES GPU OPTIMIZATION
 
 def main():
 
@@ -127,6 +129,7 @@ def main():
     model_fact = ModelFactory.ModelFactory()
 
     ## STRATEGIES OF TRAIN INSTANCES
+    undersampling = UnderSampling.UnderSampling()
     oversampling = OverSampling.OverSampling()
     data_augment = DataAugmentation.DataAugmentation()
 
@@ -139,23 +142,25 @@ def main():
     alexNet = model_fact.getModel(config.ALEX_NET, data_obj, *args)
 
     # APPLY STRATEGIES OF TRAIN
-    #alexNet.addStrategy(oversampling)
-    #alexNet.addStrategy(data_augment)
+    #alexNet.addStrategy(undersampling)
+    alexNet.addStrategy(oversampling)
+    alexNet.addStrategy(data_augment)
 
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
-    filters_cnn = (96, 96, 72, 72, 96, 96)
-    dense_neurons = (28, )
+    filters_cnn = (96, 96, 96, 72, 64, 64)
+    dense_neurons = (14, )
+    batch_size = (config.BATCH_SIZE_ALEX_AUG, )
 
     # APPLY BUILD, TRAIN AND PREDICT
-    model, predictions, history = alexNet.template_method(*(filters_cnn+dense_neurons))
+    #model, predictions, history = alexNet.template_method(*(filters_cnn+dense_neurons+batch_size))
 
     ## PLOT FINAL RESULTS
-    config_func.print_final_results(alexNet, predictions, history)
+    #config_func.print_final_results(data_obj.y_test, predictions, history)
 
     ## ---------------------------VGGNET APPLICATION ------------------------------------
 
     ## DEFINITION OF NUMBER OF CNN AND DENSE LAYERS
-    vggLayers = (4, 1)
+    vggLayers = (5, 2)
 
     ## GET VGGNET MODEL
     vggnet = model_fact.getModel(config.VGG_NET, data_obj, *vggLayers)
@@ -165,14 +170,16 @@ def main():
     vggnet.addStrategy(data_augment)
 
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
-    filters_cnn = (16, 16, 24, 32, 64, 96)
-    dense_neurons = (14, )
+    filters_cnn = (16, 16, 32, 32, 48, 72)
+    dense_neurons = (16, 8)
+    batch_size = (config.BATCH_SIZE_ALEX_AUG, )
 
     # APPLY BUILD, TRAIN AND PREDICT
-    #model, predictions, history = vggnet.template_method(*(filters_cnn+dense_neurons))
+    #model, predictions, history = vggnet.template_method(*(filters_cnn+dense_neurons+batch_size))
+    #vggnet.save(model, config.VGG_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
-    #config_func.print_final_results(vggnet, predictions, history)
+    #config_func.print_final_results(data_obj.y_test, predictions, history)
 
     ## ---------------------------RESNET APPLICATION ------------------------------------
 
@@ -180,14 +187,15 @@ def main():
     number_cnn_dense = (9 ,0)
 
     ## definition filters of resnet
-    initial_conv = (128,)
-    conv2_stage = (64, 96)
-    conv3_stage = (96, 128)
-    conv4_stage = (128, 196)
-    conv5_stage = (196, 248)
+    initial_conv = (72,)
+    conv2_stage = (72, 84)
+    conv3_stage = (84, 96)
+    conv4_stage = (96, 128)
+    conv5_stage = (128, 128)
+    batch_size = (config.BATCH_SIZE_ALEX_AUG, )
     resnet_args = (
         initial_conv + conv2_stage + conv3_stage +
-        conv4_stage + conv5_stage
+        conv4_stage + conv5_stage + batch_size
     )
 
     ## GET MODEL AND DEFINE STRATEGIES
@@ -196,15 +204,28 @@ def main():
     resnet.addStrategy(data_augment)
 
     # APPLY BUILD, TRAIN AND PREDICT
-    #model, predictions, history = resnet.template_method(*resnet_args)
+    model, predictions, history = resnet.template_method(*resnet_args)
+    resnet.save(model, config.RES_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
-    #config_func.print_final_results(resnet, predictions, history)
+    config_func.print_final_results(data_obj.y_test, predictions, history)
 
     ## --------------------------- ENSEMBLE OF MODELS ------------------------------------
 
     ## get weights of all methods from files
-    ##call ensemble method
+    # vggnet = load_model(config.VGG_NET_WEIGHTS_FILE)
+    # resnet = load_model(config.RES_NET_WEIGHTS_FILE)
+    #
+    # models = [vggnet, resnet]
+    #
+    # ##call ensemble method
+    # ensemble_model = config_func.ensemble(models=models)
+    # predictions = ensemble_model.predict(data_obj.X_test)
+    # argmax_preds = np.argmax(predictions, axis=1)  # BY ROW, BY EACH SAMPLE
+    # argmax_preds = keras.utils.to_categorical(argmax_preds)
+    #
+    # ## print final results
+    # config_func.print_final_results(data_obj.y_test, argmax_preds, history=None)
 
 if __name__ == "__main__":
     main()

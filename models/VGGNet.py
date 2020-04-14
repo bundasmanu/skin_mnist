@@ -6,7 +6,7 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dropout, Activation, Dense, Flatten, BatchNormalization
 from keras.callbacks.callbacks import History
 from typing import Tuple
-from keras.optimizers import Adam
+from keras.optimizers import Adam , SGD
 from keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from sklearn.utils import class_weight
 import config_func
@@ -49,7 +49,7 @@ class VGGNet(Model.Model):
             model.add(Activation(config.RELU_FUNCTION))
             model.add(MaxPooling2D(pool_size=(2,2), strides=2))
             model.add(BatchNormalization())
-            model.add(Dropout(0.15))
+            model.add(Dropout(0.25))
 
             model.add(Conv2D(filters=args[1], kernel_size=(3,3), padding=config.VALID_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
             model.add(Activation(config.RELU_FUNCTION))
@@ -57,31 +57,51 @@ class VGGNet(Model.Model):
             model.add(Activation(config.RELU_FUNCTION))
             model.add(MaxPooling2D(pool_size=(2,2), strides=2))
             model.add(BatchNormalization())
-            model.add(Dropout(0.15))
+            model.add(Dropout(0.25))
 
-            model.add(Conv2D(filters=args[2], input_shape=input_shape, kernel_size=(3,3),
-                             padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Conv2D(filters=args[2], kernel_size=(3,3),
+                             padding=config.VALID_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
             model.add(Activation(config.RELU_FUNCTION))
-            model.add(Conv2D(filters=args[2], kernel_size=(3,3), padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Conv2D(filters=args[2], kernel_size=(3,3), padding=config.VALID_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
             model.add(Activation(config.RELU_FUNCTION))
-            model.add(MaxPooling2D(pool_size=(2,2), strides=1))
+            model.add(MaxPooling2D(pool_size=(2,2), strides=2))
             model.add(BatchNormalization())
             model.add(Dropout(0.25))
 
-            model.add(Conv2D(filters=args[3], kernel_size=(3,3), padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Conv2D(filters=args[3], kernel_size=(3,3), padding=config.VALID_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
             model.add(Activation(config.RELU_FUNCTION))
-            model.add(Conv2D(filters=args[3], kernel_size=(3,3), padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Conv2D(filters=args[3], kernel_size=(3,3), padding=config.VALID_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
             model.add(Activation(config.RELU_FUNCTION))
-            model.add(MaxPooling2D(pool_size=(2,2), strides=1))
+            model.add(MaxPooling2D(pool_size=(2,2), strides=2))
             model.add(BatchNormalization())
             model.add(Dropout(0.25))
+
+            model.add(Conv2D(filters=args[4], kernel_size=(3,3), padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Activation(config.RELU_FUNCTION))
+            model.add(Conv2D(filters=args[4], kernel_size=(3,3), padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Activation(config.RELU_FUNCTION))
+            model.add(MaxPooling2D(pool_size=(2,2), strides=2))
+            model.add(BatchNormalization())
+            model.add(Dropout(0.25))
+            #
+            # model.add(Conv2D(filters=args[5], kernel_size=(3,3), padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            # model.add(Activation(config.RELU_FUNCTION))
+            # model.add(Conv2D(filters=args[5], kernel_size=(3,3), padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            # model.add(Activation(config.RELU_FUNCTION))
+            # model.add(MaxPooling2D(pool_size=(2,2), strides=2))
+            # model.add(BatchNormalization())
+            # model.add(Dropout(0.25))
 
             model.add(Flatten())
 
-            model.add(Dense(units=args[4]))
+            model.add(Dense(units=args[6]))
             model.add(Activation(config.RELU_FUNCTION))
             model.add(BatchNormalization())
-            model.add(Dropout(0.2))
+            model.add(Dropout(0.3))
+
+            model.add(Dense(units=args[7]))
+            model.add(Activation(config.RELU_FUNCTION))
+            model.add(BatchNormalization())
 
             model.add(Dense(units=config.NUMBER_CLASSES))
             model.add(Activation(config.SOFTMAX_FUNCTION))
@@ -92,7 +112,15 @@ class VGGNet(Model.Model):
         except:
             raise CustomError.ErrorCreationModel(config.ERROR_ON_BUILD)
 
-    def train(self, model : Sequential) -> Tuple[History, Sequential]:
+    def train(self, model : Sequential, *args) -> Tuple[History, Sequential]:
+
+        '''
+        THIS FUNCTION IS RESPONSIBLE FOR MAKE THE TRAINING OF MODEL
+        :param model: Sequential model builded before, or passed (already trained model)
+        :param args: only one value batch size
+        :return: Sequential model --> trained model
+        :return: History.history --> train and validation loss and metrics variation along epochs
+        '''
 
         try:
 
@@ -102,6 +130,7 @@ class VGGNet(Model.Model):
 
             # OPTIMIZER
             opt = Adam(learning_rate=config.LEARNING_RATE, decay=config.DECAY)
+            #opt = SGD(learning_rate=0.001, decay=config.DECAY, momentum=0.9,  nesterov=True)
 
             # COMPILE
             model.compile(optimizer=opt, loss=config.LOSS_CATEGORICAL, metrics=[config.ACCURACY_METRIC])
@@ -137,7 +166,7 @@ class VGGNet(Model.Model):
                 history = model.fit(
                     x=X_train,
                     y=y_train,
-                    batch_size=config.BATCH_SIZE_ALEX_NO_AUG,
+                    batch_size=args[0],
                     epochs=config.EPOCHS,
                     validation_data=(self.data.X_val, self.data.y_val),
                     shuffle=True,
@@ -153,7 +182,7 @@ class VGGNet(Model.Model):
                 generator=train_generator,
                 validation_data=(self.data.X_val, self.data.y_val),
                 epochs=config.EPOCHS,
-                steps_per_epoch=X_train.shape[0] / config.BATCH_SIZE_ALEX_AUG,
+                steps_per_epoch=X_train.shape[0] / args[0],
                 shuffle=True,
                 class_weight=class_weights,
                 verbose=1,

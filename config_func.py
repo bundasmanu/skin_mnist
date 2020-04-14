@@ -14,7 +14,7 @@ import cv2
 from exceptions import CustomError
 import pandas
 from keras.models import Model as mp
-from keras.layers import Average
+from keras.layers import Average, Input
 from models import Model
 
 def getImages(directory):
@@ -272,7 +272,8 @@ def getConfusionMatrix(predictions, y_test):
     try:
 
         #CREATE REPORT
-        report = classification_report(y_test, predictions, target_names=config.DICT_TARGETS)
+        report = classification_report(y_test, predictions, target_names=config.DICT_TARGETS,)
+                                       #output_dict=True) # returns a dict with metrics to access easily, important in optimizer
 
         #CREATION OF CONFUSION MATRIX
         confusion_mat = confusion_matrix(y_test, predictions)
@@ -409,13 +410,15 @@ def ensemble(models):
     try:
 
         ## get outputs of each model
-        models_out = [i.outputs[0] for i in models]
+        input_shape = (config.WIDTH, config.HEIGHT, config.CHANNELS)
+        input_model = Input(input_shape)
+        models_out = [i(input_model) for i in models]
 
         ## get average of each model (ensemble)
         average = Average() (models_out)
 
         ## define model with new outputs
-        input_model = (config.WIDTH, config.HEIGHT, config.CHANNELS)
+
         model = mp(input_model, average, name='ensemble')
 
         return model
@@ -423,11 +426,11 @@ def ensemble(models):
     except:
         raise
 
-def print_final_results(model: Model.Model, predictions, history):
+def print_final_results(y_test, predictions, history):
 
     '''
     THIS FUNCTION IS USED TO PRINT ANND PLOT FINAL RESULTS OF MODEL EVALUATION
-    :param model: Model.Model : type of model (AlexNet, VGGNet, ResNet)
+    :param y_test: real predictions of test
     :param predictions: numpy array : predictions of model
     :param history: History.history : history of train (validation and train along epochs)
     :return: nothing only print's and plot's
@@ -435,10 +438,11 @@ def print_final_results(model: Model.Model, predictions, history):
 
     try:
 
-        print(plot_cost_history(history))
-        print(plot_accuracy_plot(history))
+        if history != None:
+            print(plot_cost_history(history))
+            print(plot_accuracy_plot(history))
         predictions = decode_array(predictions)  # DECODE ONE-HOT ENCODING PREDICTIONS ARRAY
-        y_test_decoded = decode_array(model.data.y_test)  # DECODE ONE-HOT ENCODING y_test ARRAY
+        y_test_decoded = decode_array(y_test)  # DECODE ONE-HOT ENCODING y_test ARRAY
         report, confusion_mat = getConfusionMatrix(predictions, y_test_decoded)
         print(report)
         plt.figure()

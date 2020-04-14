@@ -55,7 +55,7 @@ class AlexNet(Model.Model):
             model.add(BatchNormalization())
             model.add(Dropout(0.25))
 
-            model.add(Conv2D(filters=args[2], kernel_size=(3,3), strides=1, padding=config.SAME_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
+            model.add(Conv2D(filters=args[2], kernel_size=(3,3), strides=1, padding=config.VALID_PADDING, kernel_regularizer=regularizers.l2(config.DECAY)))
             model.add(Activation(config.RELU_FUNCTION))
             model.add(MaxPooling2D(pool_size=(2,2), strides=2))
             model.add(BatchNormalization())
@@ -103,11 +103,12 @@ class AlexNet(Model.Model):
         except:
             raise CustomError.ErrorCreationModel(config.ERROR_ON_BUILD)
 
-    def train(self, model : Sequential) -> Tuple[History, Sequential]:
+    def train(self, model : Sequential, *args) -> Tuple[History, Sequential]:
 
         '''
         THIS FUNCTION IS RESPONSIBLE FOR MAKE THE TRAINING OF MODEL
         :param model: Sequential model builded before, or passed (already trained model)
+        :param args: only one value batch size
         :return: Sequential model --> trained model
         :return: History.history --> train and validation loss and metrics variation along epochs
         '''
@@ -155,7 +156,7 @@ class AlexNet(Model.Model):
                 history = model.fit(
                     x=X_train,
                     y=y_train,
-                    batch_size=config.BATCH_SIZE_ALEX_NO_AUG,
+                    batch_size=args[0],
                     epochs=config.EPOCHS,
                     validation_data=(self.data.X_val, self.data.y_val),
                     shuffle=True,
@@ -171,7 +172,7 @@ class AlexNet(Model.Model):
                 generator=train_generator,
                 validation_data=(self.data.X_val, self.data.y_val),
                 epochs=config.EPOCHS,
-                steps_per_epoch=X_train.shape[0] / config.BATCH_SIZE_ALEX_AUG,
+                steps_per_epoch=X_train.shape[0] / args[0],
                 shuffle=True,
                 class_weight=class_weights,
                 verbose=1,
