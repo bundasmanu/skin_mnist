@@ -21,15 +21,29 @@ class Optimizer(ABC):
         :param score: final score on train
         :param args: values of model layers --> the number of args need to be equal to total of layer used
                     e.g: args: (32, 48, 64, 32, 16) --> the sum of nCNNLayers and nDenseLayers need to be equal to number of args
-                    last argument is a confusion matrix
+                    last argument is metrics report
         :return: lost function
         '''
 
         try:
 
             #OBJECTIVE FUNCTION NEED TO BE DEFINED ACORDING TO PROBLEM IN HANDS
+            cnnFilters = [args[i] for i in range(self.model.nCNNLayers)] #ATTRIBUTION IMPORTANCE TO CNN FILTERS (*i) --> LAST FCONVOLUTION LAYER IS MORE IMPORTANT THAN FIRST
+            totalFilters = sum(cnnFilters)
+            denseNeurons = [args[(self.model.nCNNLayers+self.model.nDenseLayers) - (i+1)] for i in range(self.model.nDenseLayers)]
+            totalNeurons = sum(denseNeurons)
 
-            return 0.0
+            # get report from args
+            report = args[-1]
+
+            ## https://stackoverflow.com/questions/48417867/access-to-numbers-in-classification-report-sklearn
+            macro_precision = report['macro avg']['precision']
+            macro_recall = report['macro avg']['recall']
+            macro_f1 = report['macro avg']['f1-score']
+
+            return 2.0 * ((1.0 - (1.0 / (totalFilters)))
+                          + (1.0 - (1.0 / (totalNeurons)))) + 3.0 * (1.0 - macro_precision) \
+                            + 4.0 * (1.0 - macro_recall) + 5.0 * (1.0 - macro_f1)
 
         except:
             raise

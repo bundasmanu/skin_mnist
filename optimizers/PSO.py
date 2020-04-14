@@ -97,8 +97,10 @@ class PSO(Optimizer.Optimizer):
                 int_converted_values = [math.trunc(i) for i in particles[i]] #CONVERSION OF DIMENSION VALUES OF PARTICLE
                 model, predictions, history = self.model.template_method(*int_converted_values) #APPLY BUILD, TRAIN AND PREDICT MODEL OPERATIONS, FOR EACH PARTICLE AND ITERATION
                 acc = (self.model.data.y_test == predictions).mean() #CHECK FINAL ACCURACY OF MODEL PREDICTIONS
-                ## CALL OBJETIVE FUNCTION AND APPEND ALL LOSSES FROM ALL PARTICLES IN ALL ITERATION
-                ## ATTENTION --> ACC AND INT_CONVERTED_VALUES ARE ONLY EXAMPLES USER NEED TO DEFINED HIS NEEDS
+                decoded_predictions = config_func.decode_array(predictions)
+                decoded_y_true = config_func.decode_array(self.model.data.y_test)
+                report, conf = config_func.getConfusionMatrix(decoded_predictions, decoded_y_true)
+                int_converted_values.append(report)
                 losses.append(self.objectiveFunction(acc, *int_converted_values)) #ADD COST LOSS TO LIST
             return losses
 
