@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import cv2
 import os
 import numpy as np
-os.environ["CUDA_VISIBLE_DEVICES"]="-1"  #THIS LINE DISABLES GPU OPTIMIZATION
+#os.environ["CUDA_VISIBLE_DEVICES"]="-1"  #THIS LINE DISABLES GPU OPTIMIZATION
 
 def main():
 
@@ -127,6 +127,7 @@ def main():
     model_fact = ModelFactory.ModelFactory()
 
     ## STRATEGIES OF TRAIN INSTANCES
+    undersampling = UnderSampling.UnderSampling()
     oversampling = OverSampling.OverSampling()
     data_augment = DataAugmentation.DataAugmentation()
 
@@ -139,15 +140,17 @@ def main():
     alexNet = model_fact.getModel(config.ALEX_NET, data_obj, *args)
 
     # APPLY STRATEGIES OF TRAIN
-    #alexNet.addStrategy(oversampling)
-    #alexNet.addStrategy(data_augment)
+    alexNet.addStrategy(oversampling)
+    #alexNet.addStrategy(undersampling)
+    alexNet.addStrategy(data_augment)
 
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
-    filters_cnn = (96, 96, 72, 72, 96, 96)
+    filters_cnn = (96, 128, 128, 96, 96, 96)
     dense_neurons = (28, )
 
     # APPLY BUILD, TRAIN AND PREDICT
     model, predictions, history = alexNet.template_method(*(filters_cnn+dense_neurons))
+    alexNet.save(model, config.ALEX_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
     config_func.print_final_results(alexNet, predictions, history)
@@ -155,7 +158,7 @@ def main():
     ## ---------------------------VGGNET APPLICATION ------------------------------------
 
     ## DEFINITION OF NUMBER OF CNN AND DENSE LAYERS
-    vggLayers = (4, 1)
+    vggLayers = (5, 1)
 
     ## GET VGGNET MODEL
     vggnet = model_fact.getModel(config.VGG_NET, data_obj, *vggLayers)
@@ -165,11 +168,12 @@ def main():
     vggnet.addStrategy(data_augment)
 
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
-    filters_cnn = (16, 16, 24, 32, 64, 96)
-    dense_neurons = (14, )
+    filters_cnn = (64, 64, 72, 72, 96, 96)
+    dense_neurons = (128, 64)
 
     # APPLY BUILD, TRAIN AND PREDICT
     #model, predictions, history = vggnet.template_method(*(filters_cnn+dense_neurons))
+    #vggnet.save(model, config.VGG_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
     #config_func.print_final_results(vggnet, predictions, history)
@@ -180,11 +184,11 @@ def main():
     number_cnn_dense = (9 ,0)
 
     ## definition filters of resnet
-    initial_conv = (128,)
-    conv2_stage = (64, 96)
-    conv3_stage = (96, 128)
-    conv4_stage = (128, 196)
-    conv5_stage = (196, 248)
+    initial_conv = (72,)
+    conv2_stage = (72, 84)
+    conv3_stage = (84, 96)
+    conv4_stage = (96, 128)
+    conv5_stage = (128, 128)
     resnet_args = (
         initial_conv + conv2_stage + conv3_stage +
         conv4_stage + conv5_stage
@@ -197,6 +201,7 @@ def main():
 
     # APPLY BUILD, TRAIN AND PREDICT
     #model, predictions, history = resnet.template_method(*resnet_args)
+    #resnet.save(model, config.RES_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
     #config_func.print_final_results(resnet, predictions, history)

@@ -19,3 +19,15 @@
 2020-04-07 17:50:27,768 - matplotlib.image - WARNING - Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
 2020-04-07 18:19:41,712 - matplotlib.image - WARNING - Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
 2020-04-07 18:19:42,568 - matplotlib.image - WARNING - Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
+2020-04-11 16:06:25,567 - tensorflow - WARNING - From /home/gustavalmeda13/miniconda3/envs/skin_mnist/lib/python3.6/site-packages/keras/backend/tensorflow_backend.py:4070: The name tf.nn.max_pool is deprecated. Please use tf.nn.max_pool2d instead.
+
+2020-04-11 16:06:27,327 - tensorflow - WARNING - From /home/gustavalmeda13/miniconda3/envs/skin_mnist/lib/python3.6/site-packages/keras/backend/tensorflow_backend.py:4074: The name tf.nn.avg_pool is deprecated. Please use tf.nn.avg_pool2d instead.
+
+2020-04-11 16:07:08,766 - tensorflow - WARNING - From /home/gustavalmeda13/miniconda3/envs/skin_mnist/lib/python3.6/site-packages/keras/backend/tensorflow_backend.py:422: The name tf.global_variables is deprecated. Please use tf.compat.v1.global_variables instead.
+
+2020-04-11 16:16:29,447 - tensorflow - WARNING - From /home/gustavalmeda13/miniconda3/envs/skin_mnist/lib/python3.6/site-packages/keras/backend/tensorflow_backend.py:4070: The name tf.nn.max_pool is deprecated. Please use tf.nn.max_pool2d instead.
+
+2020-04-11 16:16:31,190 - tensorflow - WARNING - From /home/gustavalmeda13/miniconda3/envs/skin_mnist/lib/python3.6/site-packages/keras/backend/tensorflow_backend.py:4074: The name tf.nn.avg_pool is deprecated. Please use tf.nn.avg_pool2d instead.
+
+2020-04-11 16:17:13,813 - tensorflow - WARNING - From /home/gustavalmeda13/miniconda3/envs/skin_mnist/lib/python3.6/site-packages/keras/backend/tensorflow_backend.py:422: The name tf.global_variables is deprecated. Please use tf.compat.v1.global_variables instead.
+

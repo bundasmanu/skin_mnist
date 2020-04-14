@@ -27,7 +27,7 @@ def getImages(directory):
 
     try:
 
-        return glob.glob(directory)
+        return sorted(glob.glob(directory))
 
     except:
         raise

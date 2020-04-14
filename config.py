@@ -37,7 +37,7 @@ DICT_TARGETS = (
 
 WANTED_IMAGES = 10015
 
-LEARNING_RATE = 0.01
+LEARNING_RATE = 0.001
 DECAY = 1e-6
 
 RELU_FUNCTION = "relu"
@@ -59,7 +59,7 @@ VALIDATION_ACCURACY = "val_accuracy"
 
 BATCH_SIZE_ALEX_NO_AUG = 32
 BATCH_SIZE_ALEX_AUG = 32
-EPOCHS = 20
+EPOCHS = 16
 MULTIPROCESSING = True
 SHUFFLE = True
 
@@ -130,6 +130,9 @@ MUTPB = 0.2
 ## weight load files
 UNET_WEIGHTS_100 = 'unet_100_epoch.h5'
 UNET_BUNET_WEIGHTS = 'weight_isic18.hdf5'
+VGG_NET_WEIGHTS_FILE = 'vggnet_weights.h5'
+ALEX_NET_WEIGHTS_FILE = 'alexnet_weights.h5'
+RES_NET_WEIGHTS_FILE = 'resnet_weights.h5'
 
 ## u-net backbone
 BACKBONE = 'resnet34'
