@@ -71,6 +71,13 @@ class PSO(Optimizer.Optimizer):
             minBounds = np.ones(totalDimensions)
             maxBounds = np.ones(totalDimensions)
 
+            ## all dimensions are in a range of [1-256]
+            maxBounds = maxBounds * 64
+
+            ## treat now only batch size bounds
+            maxBounds[-1] = 40
+            minBounds[-1] = 32
+
             bounds = (minBounds, maxBounds)
 
             return bounds
@@ -96,10 +103,10 @@ class PSO(Optimizer.Optimizer):
             for i in range(particles.shape[0]):
                 int_converted_values = [math.trunc(i) for i in particles[i]] #CONVERSION OF DIMENSION VALUES OF PARTICLE
                 model, predictions, history = self.model.template_method(*int_converted_values) #APPLY BUILD, TRAIN AND PREDICT MODEL OPERATIONS, FOR EACH PARTICLE AND ITERATION
-                acc = (self.model.data.y_test == predictions).mean() #CHECK FINAL ACCURACY OF MODEL PREDICTIONS
                 decoded_predictions = config_func.decode_array(predictions)
                 decoded_y_true = config_func.decode_array(self.model.data.y_test)
-                report, conf = config_func.getConfusionMatrix(decoded_predictions, decoded_y_true)
+                report, conf = config_func.getConfusionMatrix(decoded_predictions, decoded_y_true, dict=True)
+                acc = report['accuracy'] ## i can't compare y_test and predict, because some classes may have been unclassified
                 int_converted_values.append(report)
                 losses.append(self.objectiveFunction(acc, *int_converted_values)) #ADD COST LOSS TO LIST
             return losses
@@ -107,11 +114,11 @@ class PSO(Optimizer.Optimizer):
         except:
             raise CustomError.ErrorCreationModel(config.ERROR_ON_OPTIMIZATION)
 
-    def optimize(self) -> Tuple[float, float]:
+    def optimize(self) -> Tuple[float, float, ps.general_optimizer.SwarmOptimizer]:
 
         '''
         THIS FUNCTION IS RESPONSIBLE TO APPLY ALL LOGIC OF PSO CNN NETWORK OPTIMIZATION
-        :return: [float, float] --> best cost and best particle position
+        :return: [float, float, SwarmOptimizer] --> best cost, best particle position and pso optimizer
         '''
 
         try:
@@ -128,8 +135,8 @@ class PSO(Optimizer.Optimizer):
                                                     options=config.lbestOptions, bounds=bounds)
 
             cost, pos = optimizer.optimize(objective_func=self.loopAllParticles, iters=self.iters)
-            self.plotCostHistory(optimizer)
-            return cost, pos
+
+            return cost, pos, optimizer
 
         except:
             raise CustomError.ErrorCreationModel(config.ERROR_ON_OPTIMIZATION)

@@ -94,7 +94,7 @@ class AlexNet(Model.Model):
             model.add(Activation(config.RELU_FUNCTION))
             model.add(BatchNormalization())
 
-            model.add(Dense(config.NUMBER_CLASSES))
+            model.add(Dense(units=config.NUMBER_CLASSES))
             model.add(Activation(config.SOFTMAX_FUNCTION))
             model.summary()
 

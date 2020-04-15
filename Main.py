@@ -155,7 +155,7 @@ def main():
     #model, predictions, history = alexNet.template_method(*(filters_cnn+dense_neurons+batch_size))
 
     ## PLOT FINAL RESULTS
-    #config_func.print_final_results(data_obj.y_test, predictions, history)
+    #config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
 
     ## ---------------------------VGGNET APPLICATION ------------------------------------
 
@@ -179,7 +179,7 @@ def main():
     #vggnet.save(model, config.VGG_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
-    #config_func.print_final_results(data_obj.y_test, predictions, history)
+    #config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
 
     ## ---------------------------RESNET APPLICATION ------------------------------------
 
@@ -204,19 +204,20 @@ def main():
     resnet.addStrategy(data_augment)
 
     # APPLY BUILD, TRAIN AND PREDICT
-    model, predictions, history = resnet.template_method(*resnet_args)
-    resnet.save(model, config.RES_NET_WEIGHTS_FILE)
+    #model, predictions, history = resnet.template_method(*resnet_args)
+    #resnet.save(model, config.RES_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
-    config_func.print_final_results(data_obj.y_test, predictions, history)
+    #config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
 
     ## --------------------------- ENSEMBLE OF MODELS ------------------------------------
 
-    ## get weights of all methods from files
+    # get weights of all methods from files
+    # alexNet = load_model(config.ALEX_NET_WEIGHTS_FILE)
     # vggnet = load_model(config.VGG_NET_WEIGHTS_FILE)
     # resnet = load_model(config.RES_NET_WEIGHTS_FILE)
     #
-    # models = [vggnet, resnet]
+    # models = [alexNet, vggnet, resnet]
     #
     # ##call ensemble method
     # ensemble_model = config_func.ensemble(models=models)
@@ -225,7 +226,23 @@ def main():
     # argmax_preds = keras.utils.to_categorical(argmax_preds)
     #
     # ## print final results
-    # config_func.print_final_results(data_obj.y_test, argmax_preds, history=None)
+    # config_func.print_final_results(data_obj.y_test, argmax_preds, history=None, dict=False)
+
+    ## --------------------------- PSO ------------------------------------------------
+
+    pso_init_args = (
+        2, # number of individuals
+        2, # iterations
+        8 # dimensions (6 conv filters, 1 dense neurons and batch size)
+    )
+
+    opt_fact = OptimizerFactory.OptimizerFactory()
+    pso = opt_fact.createOptimizer(config.PSO_OPTIMIZER, alexNet, *pso_init_args)
+
+    cost, pos, optimizer = pso.optimize()
+    print(cost)
+    print(pos)
+    pso.plotCostHistory(optimizer)
 
 if __name__ == "__main__":
     main()

@@ -29,7 +29,8 @@ class Optimizer(ABC):
 
             #OBJECTIVE FUNCTION NEED TO BE DEFINED ACORDING TO PROBLEM IN HANDS
             cnnFilters = [args[i] for i in range(self.model.nCNNLayers)] #ATTRIBUTION IMPORTANCE TO CNN FILTERS (*i) --> LAST FCONVOLUTION LAYER IS MORE IMPORTANT THAN FIRST
-            totalFilters = sum(cnnFilters)
+            totalMajorFilters = sum(cnnFilters[0:round(len(cnnFilters)/2)])
+            totalMinorFilters = sum(cnnFilters[round(len(cnnFilters)/2):])
             denseNeurons = [args[(self.model.nCNNLayers+self.model.nDenseLayers) - (i+1)] for i in range(self.model.nDenseLayers)]
             totalNeurons = sum(denseNeurons)
 
@@ -41,9 +42,9 @@ class Optimizer(ABC):
             macro_recall = report['macro avg']['recall']
             macro_f1 = report['macro avg']['f1-score']
 
-            return 2.0 * ((1.0 - (1.0 / (totalFilters)))
-                          + (1.0 - (1.0 / (totalNeurons)))) + 3.0 * (1.0 - macro_precision) \
-                            + 4.0 * (1.0 - macro_recall) + 5.0 * (1.0 - macro_f1)
+            return 3.5 * (1.0 - (1.0 / (totalMajorFilters))) + 2.0 * (1.0 - (1.0 / (totalMinorFilters)))\
+                          + 3.5 * (1.0 - (1.0 / (totalNeurons))) + 3.0 * (1.0 - acc) \
+                            + 3.7 * (1.0 - macro_precision) + 4.0 * (1.0 - macro_recall) + 5.0 * (1.0 - macro_f1)
 
         except:
             raise

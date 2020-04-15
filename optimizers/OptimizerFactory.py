@@ -12,7 +12,7 @@ class OptimizerFactory:
 
         '''
         THIS FUNCTION IS USED TO CREATE INHERITED INSTANCES OF OPTIMIZERS, e.g PSO or GA
-        :param typeOptimizer: str --> type of optimizer user wants
+        :param typeOptimizer: str --> type of optimizer user wants (pso or ga)
         :param model: Model Object --> model to associate with optimizer
         :param args: list of data --> (number individuals, iterations, dimensions of problem)
         :return:

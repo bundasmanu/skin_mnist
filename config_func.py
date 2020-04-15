@@ -259,7 +259,7 @@ def decode_array(array):
     except:
         raise
 
-def getConfusionMatrix(predictions, y_test):
+def getConfusionMatrix(predictions, y_test, dict):
 
     '''
     THIS FUNCTION IS USED IN ORDER TO SHOW MAIN RESULTS OF MODEL EVALUATION (ACCURACY, RECALL, PRECISION OR F-SCORE)
@@ -272,9 +272,11 @@ def getConfusionMatrix(predictions, y_test):
     try:
 
         #CREATE REPORT
-        report = classification_report(y_test, predictions, target_names=config.DICT_TARGETS,)
-                                       #output_dict=True) # returns a dict with metrics to access easily, important in optimizer
-
+        if dict == True:
+            report = classification_report(y_test, predictions, target_names=config.DICT_TARGETS,
+                                       output_dict=True) # returns a dict with metrics to access easily, important in optimizer
+        else:
+            report = classification_report(y_test, predictions, target_names=config.DICT_TARGETS)
         #CREATION OF CONFUSION MATRIX
         confusion_mat = confusion_matrix(y_test, predictions)
 
@@ -426,7 +428,7 @@ def ensemble(models):
     except:
         raise
 
-def print_final_results(y_test, predictions, history):
+def print_final_results(y_test, predictions, history, dict=False):
 
     '''
     THIS FUNCTION IS USED TO PRINT ANND PLOT FINAL RESULTS OF MODEL EVALUATION
@@ -443,7 +445,7 @@ def print_final_results(y_test, predictions, history):
             print(plot_accuracy_plot(history))
         predictions = decode_array(predictions)  # DECODE ONE-HOT ENCODING PREDICTIONS ARRAY
         y_test_decoded = decode_array(y_test)  # DECODE ONE-HOT ENCODING y_test ARRAY
-        report, confusion_mat = getConfusionMatrix(predictions, y_test_decoded)
+        report, confusion_mat = getConfusionMatrix(predictions, y_test_decoded, dict)
         print(report)
         plt.figure()
         plot_confusion_matrix(confusion_mat, config.DICT_TARGETS)
