@@ -72,11 +72,11 @@ class PSO(Optimizer.Optimizer):
             maxBounds = np.ones(totalDimensions)
 
             ## all dimensions are in a range of [1-256]
-            maxBounds = maxBounds * 64
+            maxBounds = maxBounds * 256
 
             ## treat now only batch size bounds
-            maxBounds[-1] = 40
-            minBounds[-1] = 32
+            maxBounds[-1] = 16
+            minBounds[-1] = 128
 
             bounds = (minBounds, maxBounds)
 
