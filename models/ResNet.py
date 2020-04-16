@@ -195,9 +195,9 @@ class ResNet(Model.Model):
 
             #CLASS WEIGHTS
             weights_y_train = config_func.decode_array(y_train)
-            class_weights = class_weight.compute_class_weight('balanced',
-                                                              numpy.unique(weights_y_train),
-                                                              weights_y_train)
+            # class_weights = class_weight.compute_class_weight('balanced',
+            #                                                   numpy.unique(weights_y_train),
+            #                                                   weights_y_train)
 
             if train_generator is None: #NO DATA AUGMENTATION
 
@@ -209,7 +209,7 @@ class ResNet(Model.Model):
                     validation_data=(self.data.X_val, self.data.y_val),
                     shuffle=True,
                     callbacks=[es_callback, decrease_callback],
-                    class_weight=class_weights
+                    class_weight=config.class_weights
                 )
 
                 return history, model
@@ -222,7 +222,7 @@ class ResNet(Model.Model):
                 epochs=config.EPOCHS,
                 steps_per_epoch=X_train.shape[0] / args[0],
                 shuffle=True,
-                class_weight=class_weights,
+                class_weight=config.class_weights,
                 verbose=1,
                 callbacks= [es_callback, decrease_callback]
             )

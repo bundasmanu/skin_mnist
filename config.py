@@ -59,7 +59,7 @@ VALIDATION_ACCURACY = "val_accuracy"
 
 BATCH_SIZE_ALEX_NO_AUG = 32
 BATCH_SIZE_ALEX_AUG = 32
-EPOCHS = 2
+EPOCHS = 20
 MULTIPROCESSING = True
 SHUFFLE = True
 
@@ -136,3 +136,14 @@ RES_NET_WEIGHTS_FILE = 'resnet_weights.h5'
 
 ## u-net backbone
 BACKBONE = 'resnet34'
+
+## class weights
+class_weights={
+    0: 2.0, # akiec
+    1: 1.5, # bcc
+    2: 1.5, # bkl
+    3: 3.0, # df
+    4: 3.0, # mel # Try to make the model more sensitive to Melanoma.
+    5: 1.0, # nv
+    6: 1.0, # vasc
+}

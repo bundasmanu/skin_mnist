@@ -204,11 +204,11 @@ def main():
     resnet.addStrategy(data_augment)
 
     # APPLY BUILD, TRAIN AND PREDICT
-    #model, predictions, history = resnet.template_method(*resnet_args)
-    #resnet.save(model, config.RES_NET_WEIGHTS_FILE)
+    model, predictions, history = resnet.template_method(*resnet_args)
+    resnet.save(model, config.RES_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
-    #config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
+    config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
 
     ## --------------------------- ENSEMBLE OF MODELS ------------------------------------
 
@@ -230,19 +230,19 @@ def main():
 
     ## --------------------------- PSO ------------------------------------------------
 
-    pso_init_args = (
-        2, # number of individuals
-        2, # iterations
-        8 # dimensions (6 conv filters, 1 dense neurons and batch size)
-    )
-
-    opt_fact = OptimizerFactory.OptimizerFactory()
-    pso = opt_fact.createOptimizer(config.PSO_OPTIMIZER, alexNet, *pso_init_args)
-
-    cost, pos, optimizer = pso.optimize()
-    print(cost)
-    print(pos)
-    pso.plotCostHistory(optimizer)
+    # pso_init_args = (
+    #     2, # number of individuals
+    #     2, # iterations
+    #     8 # dimensions (6 conv filters, 1 dense neurons and batch size)
+    # )
+    #
+    # opt_fact = OptimizerFactory.OptimizerFactory()
+    # pso = opt_fact.createOptimizer(config.PSO_OPTIMIZER, alexNet, *pso_init_args)
+    #
+    # cost, pos, optimizer = pso.optimize()
+    # print(cost)
+    # print(pos)
+    # pso.plotCostHistory(optimizer)
 
 if __name__ == "__main__":
     main()
