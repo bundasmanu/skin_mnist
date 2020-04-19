@@ -143,8 +143,8 @@ def main():
 
     # APPLY STRATEGIES OF TRAIN
     #alexNet.addStrategy(undersampling)
-    alexNet.addStrategy(oversampling)
-    alexNet.addStrategy(data_augment)
+    #alexNet.addStrategy(oversampling)
+    #alexNet.addStrategy(data_augment)
 
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
     filters_cnn = (96, 96, 96, 72, 64, 64)
@@ -239,11 +239,11 @@ def main():
     pso_resnet = opt_fact.createOptimizer(config.PSO_OPTIMIZER, resnet, *config.pso_init_args_resnet)
 
     # optimize and print best cost
-    cost, pos, optimizer = pso_resnet.optimize()
+    cost, pos, optimizer = pso_alex.optimize()
     print(cost)
     print(pos)
-    pso_resnet.plotCostHistory(optimizer)
-    pso_resnet.plotPositionHistory(optimizer, np.array(config.X_LIMITS), np.array(config.Y_LIMITS), config.POS_VAR_EXP,
+    pso_alex.plotCostHistory(optimizer)
+    pso_alex.plotPositionHistory(optimizer, np.array(config.X_LIMITS), np.array(config.Y_LIMITS), config.POS_VAR_EXP,
                                config.LABEL_X_AXIS, config.LABEL_Y_AXIS)
 
 if __name__ == "__main__":
