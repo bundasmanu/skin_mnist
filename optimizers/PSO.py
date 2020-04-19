@@ -10,12 +10,13 @@ from pyswarms.utils.plotters import plot_cost_history, plot_contour
 import matplotlib.pyplot as plt
 import config_func
 from pyswarms.utils.plotters.formatters import Designer
-from IPython.display import Image
+from IPython.display import Image, HTML
 
 class PSO(Optimizer.Optimizer):
 
     def __init__(self, model : Model.Model, *args): #DIMENSIONS NEED TO BE EQUAL TO NUMBER OF LAYERS ON MODEL
-        super(PSO, self).__init__(model, *args)
+        self.limit_super = args[-1] # last argument
+        super(PSO, self).__init__(model, *args[:-1]) # all args except last one
 
     def plotCostHistory(self, optimizer):
 
@@ -45,14 +46,19 @@ class PSO(Optimizer.Optimizer):
 
         try:
 
+            ##code ref: https://www.tutorialfor.com/questions-83899.htm
             d = Designer(limits=[xLimits, yLimits], label=[xLabel, yLabel])
-            animation = plot_contour(pos_history=optimizer.pos_history,
+            pos = []
+            for i in range(config.ITERATIONS):
+                pos.append(optimizer.pos_history[i][:, 0:2])
+            animation = plot_contour(pos_history=pos,
                                      designer=d)
 
-            animation.save(filename, writer='ffmpeg', fps=10)
-            Image(url=filename)
+            plt.close(animation._fig)
+            html_file = animation.to_jshtml()
+            with open(filename, 'w') as f:
+                f.write(html_file)
 
-            plt.show()
         except:
             raise CustomError.ErrorCreationModel(config.ERROR_ON_PLOTTING)
 
@@ -65,18 +71,14 @@ class PSO(Optimizer.Optimizer):
 
         try:
 
-            ## EXAMPLE BOUNDS DEFINITION, USER CAN DEFINE OUR OWN BOUNDS
             totalDimensions = self.dims
 
             minBounds = np.ones(totalDimensions)
+            minBounds[totalDimensions - 1] = minBounds[totalDimensions - 1] * config.MIN_BATCH_SIZE  # min batch size
             maxBounds = np.ones(totalDimensions)
 
-            ## all dimensions are in a range of [1-256]
-            maxBounds = maxBounds * 64
-
-            ## treat now only batch size bounds
-            maxBounds[-1] = 40
-            minBounds[-1] = 32
+            maxBounds = [maxBounds[j] * i for i, j in zip(self.limit_super, range(totalDimensions))]
+            maxBounds = np.array(maxBounds)
 
             bounds = (minBounds, maxBounds)
 

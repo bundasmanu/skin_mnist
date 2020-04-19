@@ -1,3 +1,5 @@
+import numpy as np
+
 WIDTH = 128
 HEIGHT = 128
 CHANNELS = 3
@@ -59,7 +61,7 @@ VALIDATION_ACCURACY = "val_accuracy"
 
 BATCH_SIZE_ALEX_NO_AUG = 32
 BATCH_SIZE_ALEX_AUG = 32
-EPOCHS = 25
+EPOCHS = 1
 MULTIPROCESSING = True
 SHUFFLE = True
 
@@ -113,13 +115,11 @@ ERROR_ON_CONV_BLOCK ="\nError on modelling convolutional block, please check the
 ERROR_ON_UNET_STRATEGY = "\nError on U-Net strategy applying"
 
 #PSO OPTIONS
-TOPOLOGY_FLAG = 0
-PARTICLES = 1
+TOPOLOGY_FLAG = 0 # 0 - GBest , 1 - LBest
+PARTICLES = 2
 ITERATIONS = 2
-PSO_DIMENSIONS = 5
-TOPOLOGY_FLAG = 0 # 0 MEANS GBEST, AND 1 MEANS LBEST
-gbestOptions = {'w' : 0.9, 'c1' : 0.3, 'c2' : 0.3}
-lbestOptions = {'w' : 0.9, 'c1' : 0.3, 'c2' : 0.3, 'k' : 4, 'p' : 2}
+gbestOptions = {'w' : 0.9, 'c1' : 0.7, 'c2' : 0.7}
+lbestOptions = {'w' : 0.9, 'c1' : 0.7, 'c2' : 0.7, 'k' : 4, 'p' : 2}
 
 #GA OPTIONS
 TOURNAMENT_SIZE = 100
@@ -147,3 +147,43 @@ class_weights={
     5: 1.0, # nv
     6: 1.0, # vasc
 }
+
+# PSO BOUNDS LIMITS
+MAX_VALUES_LAYERS_ALEX_NET = [256, 256, 256, 256, 256, 256, 256, 256] # 6 convs, 1 dense and batch size
+MAX_VALUES_LAYERS_VGG_NET = [32, 32, 32, 32, 32, 32, 32] # 5 convs, 1 dense and batch_size
+MAX_VALUES_LAYERS_RESNET_NET = [32, 32, 32, 32, 32, 32, 32, 32, 32] ## 8 convs and batch size
+MIN_BATCH_SIZE = 16
+
+#FILENAME POSITION PSO VARIATION
+POS_VAR_LOWER = 'particlesPso.mp4'
+POS_VAR_INTER = 'particlesPso_intermedia.mp4'
+POS_VAR_HIGHTER = 'particlesPso_elevada.mp4'
+POS_VAR_EXP = 'pos_var_exp.html'
+
+# VARIABLES MAKE .mp4 VIDEO with particles movement position
+X_LIMITS = [1, 256]
+Y_LIMITS = [1, 256]
+LABEL_X_AXIS = 'Nºfiltros 1ªcamada'
+LABEL_Y_AXIS = 'Nºfiltros 2ªcamada'
+
+# PSO INIT DEFINITIONS --> IN ARGS FORM
+pso_init_args_alex = (
+    PARTICLES,  # number of individuals
+    ITERATIONS,  # iterations
+    8,  # dimensions (6 conv filters, 1 dense neurons and batch size)
+    np.array(MAX_VALUES_LAYERS_ALEX_NET)  # superior bound limits for dimensions
+)
+
+pso_init_args_vgg = (
+    PARTICLES,  # number of individuals
+    ITERATIONS,  # iterations
+    7,  # dimensions (6 conv filters, 1 dense neurons and batch size)
+    np.array(MAX_VALUES_LAYERS_VGG_NET)  # superior bound limits for dimensions
+)
+
+pso_init_args_resnet = (
+    PARTICLES,  # number of individuals
+    ITERATIONS,  # iterations
+    9,  # dimensions (6 conv filters, 1 dense neurons and batch size)
+    np.array(MAX_VALUES_LAYERS_RESNET_NET)  # superior bound limits for dimensions
+)

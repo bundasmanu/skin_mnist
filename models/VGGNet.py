@@ -99,10 +99,6 @@ class VGGNet(Model.Model):
             model.add(BatchNormalization())
             model.add(Dropout(0.3))
 
-            model.add(Dense(units=args[7], kernel_regularizer=regularizers.l2(config.DECAY)))
-            model.add(Activation(config.RELU_FUNCTION))
-            model.add(BatchNormalization())
-
             model.add(Dense(units=config.NUMBER_CLASSES))
             model.add(Activation(config.SOFTMAX_FUNCTION))
             model.summary()
@@ -112,7 +108,7 @@ class VGGNet(Model.Model):
         except:
             raise CustomError.ErrorCreationModel(config.ERROR_ON_BUILD)
 
-    def train(self, model : Sequential) -> Tuple[History, Sequential]:
+    def train(self, model : Sequential, *args) -> Tuple[History, Sequential]:
 
         try:
 
@@ -158,7 +154,7 @@ class VGGNet(Model.Model):
                 history = model.fit(
                     x=X_train,
                     y=y_train,
-                    batch_size=config.BATCH_SIZE_ALEX_NO_AUG,
+                    batch_size=args[0],
                     epochs=config.EPOCHS,
                     validation_data=(self.data.X_val, self.data.y_val),
                     shuffle=True,
@@ -174,7 +170,7 @@ class VGGNet(Model.Model):
                 generator=train_generator,
                 validation_data=(self.data.X_val, self.data.y_val),
                 epochs=config.EPOCHS,
-                steps_per_epoch=X_train.shape[0] / config.BATCH_SIZE_ALEX_AUG,
+                steps_per_epoch=X_train.shape[0] / args[0],
                 shuffle=True,
                 class_weight=class_weights,
                 verbose=1,

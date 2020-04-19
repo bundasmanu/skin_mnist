@@ -160,7 +160,7 @@ def main():
     ## ---------------------------VGGNET APPLICATION ------------------------------------
 
     ## DEFINITION OF NUMBER OF CNN AND DENSE LAYERS
-    vggLayers = (5, 2)
+    vggLayers = (5, 1)
 
     ## GET VGGNET MODEL
     vggnet = model_fact.getModel(config.VGG_NET, data_obj, *vggLayers)
@@ -187,11 +187,11 @@ def main():
     number_cnn_dense = (9 ,0)
 
     ## definition filters of resnet
-    initial_conv = (64,)
-    conv2_stage = (64, 48)
-    conv3_stage = (48, 64)
-    conv4_stage = (64, 96)
-    conv5_stage = (96, 96)
+    initial_conv = (72,)
+    conv2_stage = (72, 84)
+    conv3_stage = (84, 96)
+    conv4_stage = (96, 128)
+    conv5_stage = (128, 128)
     batch_size = (config.BATCH_SIZE_ALEX_AUG, )
     resnet_args = (
         initial_conv + conv2_stage + conv3_stage +
@@ -204,11 +204,11 @@ def main():
     resnet.addStrategy(data_augment)
 
     # APPLY BUILD, TRAIN AND PREDICT
-    model, predictions, history = resnet.template_method(*resnet_args)
+    #model, predictions, history = resnet.template_method(*resnet_args)
     #resnet.save(model, config.RES_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
-    config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
+    #config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
 
     ## --------------------------- ENSEMBLE OF MODELS ------------------------------------
 
@@ -230,19 +230,21 @@ def main():
 
     ## --------------------------- PSO ------------------------------------------------
 
-    # pso_init_args = (
-    #     2, # number of individuals
-    #     2, # iterations
-    #     8 # dimensions (6 conv filters, 1 dense neurons and batch size)
-    # )
-    #
-    # opt_fact = OptimizerFactory.OptimizerFactory()
-    # pso = opt_fact.createOptimizer(config.PSO_OPTIMIZER, alexNet, *pso_init_args)
-    #
-    # cost, pos, optimizer = pso.optimize()
-    # print(cost)
-    # print(pos)
-    # pso.plotCostHistory(optimizer)
+    # optimizer fabric object
+    opt_fact = OptimizerFactory.OptimizerFactory()
+
+    # definition models optimizers
+    pso_alex = opt_fact.createOptimizer(config.PSO_OPTIMIZER, alexNet, *config.pso_init_args_alex)
+    pso_vgg = opt_fact.createOptimizer(config.PSO_OPTIMIZER, vggnet, *config.pso_init_args_vgg)
+    pso_resnet = opt_fact.createOptimizer(config.PSO_OPTIMIZER, resnet, *config.pso_init_args_resnet)
+
+    # optimize and print best cost
+    cost, pos, optimizer = pso_resnet.optimize()
+    print(cost)
+    print(pos)
+    pso_resnet.plotCostHistory(optimizer)
+    pso_resnet.plotPositionHistory(optimizer, np.array(config.X_LIMITS), np.array(config.Y_LIMITS), config.POS_VAR_EXP,
+                               config.LABEL_X_AXIS, config.LABEL_Y_AXIS)
 
 if __name__ == "__main__":
     main()
