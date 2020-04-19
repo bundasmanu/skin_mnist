@@ -195,9 +195,9 @@ class ResNet(Model.Model):
 
             #CLASS WEIGHTS
             weights_y_train = config_func.decode_array(y_train)
-            # class_weights = class_weight.compute_class_weight('balanced',
-            #                                                   numpy.unique(weights_y_train),
-            #                                                   weights_y_train)
+            class_weights = class_weight.compute_class_weight('balanced',
+                                                               numpy.unique(weights_y_train),
+                                                               weights_y_train)
 
             if train_generator is None: #NO DATA AUGMENTATION
 

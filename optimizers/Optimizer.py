@@ -32,7 +32,10 @@ class Optimizer(ABC):
             totalMajorFilters = sum(cnnFilters[0:round(len(cnnFilters)/2)])
             totalMinorFilters = sum(cnnFilters[round(len(cnnFilters)/2):])
             denseNeurons = [args[(self.model.nCNNLayers+self.model.nDenseLayers) - (i+1)] for i in range(self.model.nDenseLayers)]
-            totalNeurons = sum(denseNeurons)
+            if not denseNeurons: # if list is empty
+                totalNeurons = 1 # resnet case --> doesn't have dense totalneurons doesn't count is multiplication is 0
+            else:
+                totalNeurons = sum(denseNeurons)
 
             # get report from args
             report = args[-1]
@@ -40,11 +43,10 @@ class Optimizer(ABC):
             ## https://stackoverflow.com/questions/48417867/access-to-numbers-in-classification-report-sklearn
             macro_precision = report['macro avg']['precision']
             macro_recall = report['macro avg']['recall']
-            macro_f1 = report['macro avg']['f1-score']
 
             return 3.5 * (1.0 - (1.0 / (totalMajorFilters))) + 2.0 * (1.0 - (1.0 / (totalMinorFilters)))\
                           + 3.5 * (1.0 - (1.0 / (totalNeurons))) + 3.0 * (1.0 - acc) \
-                            + 3.7 * (1.0 - macro_precision) + 4.0 * (1.0 - macro_recall) + 5.0 * (1.0 - macro_f1)
+                            + 4.0 * (1.0 - macro_precision) + 5.0 * (1.0 - macro_recall)
 
         except:
             raise
