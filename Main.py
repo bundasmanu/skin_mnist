@@ -187,11 +187,11 @@ def main():
     number_cnn_dense = (9 ,0)
 
     ## definition filters of resnet
-    initial_conv = (72,)
-    conv2_stage = (72, 84)
-    conv3_stage = (84, 96)
-    conv4_stage = (96, 128)
-    conv5_stage = (128, 128)
+    initial_conv = (64,)
+    conv2_stage = (64, 48)
+    conv3_stage = (48, 64)
+    conv4_stage = (64, 96)
+    conv5_stage = (96, 96)
     batch_size = (config.BATCH_SIZE_ALEX_AUG, )
     resnet_args = (
         initial_conv + conv2_stage + conv3_stage +
@@ -205,7 +205,7 @@ def main():
 
     # APPLY BUILD, TRAIN AND PREDICT
     model, predictions, history = resnet.template_method(*resnet_args)
-    resnet.save(model, config.RES_NET_WEIGHTS_FILE)
+    #resnet.save(model, config.RES_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
     config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
