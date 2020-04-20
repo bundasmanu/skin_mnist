@@ -185,9 +185,15 @@ class ResNet(Model.Model):
                 if len(self.StrategyList) > 1: #USER CHOOSE DATA AUGMENTATION OPTION
                     train_generator = self.StrategyList[1].applyStrategy(self.data)
 
-            es_callback = EarlyStopping(monitor='val_loss', patience=4)
+            es_callback = EarlyStopping(monitor='val_loss', patience=3)
             decrease_callback = ReduceLROnPlateau(monitor='val_loss',
-                                                        patience=2,
+                                                        patience=1,
+                                                        factor=0.7,
+                                                        mode='min',
+                                                        verbose=1,
+                                                        min_lr=0.000001)
+            decrease_callback2 = ReduceLROnPlateau(monitor='val_loss',
+                                                        patience=1,
                                                         factor=0.7,
                                                         mode='min',
                                                         verbose=1,
@@ -208,7 +214,7 @@ class ResNet(Model.Model):
                     epochs=config.EPOCHS,
                     validation_data=(self.data.X_val, self.data.y_val),
                     shuffle=True,
-                    callbacks=[es_callback, decrease_callback],
+                    callbacks=[es_callback, decrease_callback, decrease_callback2],
                     class_weight=config.class_weights
                 )
 
@@ -224,7 +230,7 @@ class ResNet(Model.Model):
                 shuffle=True,
                 class_weight=config.class_weights,
                 verbose=1,
-                callbacks= [es_callback, decrease_callback]
+                callbacks= [es_callback, decrease_callback, decrease_callback2]
             )
 
             return history, model
