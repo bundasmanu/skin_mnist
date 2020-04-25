@@ -1,5 +1,10 @@
 import numpy as np
+import itertools
 
+# global counter
+counter_iterations = itertools.count(start=0, step=1)
+
+# image dimensions
 WIDTH = 128
 HEIGHT = 128
 CHANNELS = 3
@@ -61,7 +66,7 @@ VALIDATION_ACCURACY = "val_accuracy"
 
 BATCH_SIZE_ALEX_NO_AUG = 32
 BATCH_SIZE_ALEX_AUG = 32
-EPOCHS = 18
+EPOCHS = 1
 MULTIPROCESSING = True
 SHUFFLE = True
 
@@ -116,8 +121,8 @@ ERROR_ON_UNET_STRATEGY = "\nError on U-Net strategy applying"
 
 #PSO OPTIONS
 TOPOLOGY_FLAG = 0 # 0 - GBest , 1 - LBest
-PARTICLES = 20
-ITERATIONS = 20
+PARTICLES = 2
+ITERATIONS = 2
 gbestOptions = {'w' : 0.9, 'c1' : 0.7, 'c2' : 0.7}
 lbestOptions = {'w' : 0.9, 'c1' : 0.7, 'c2' : 0.7, 'k' : 4, 'p' : 2}
 
@@ -149,9 +154,9 @@ class_weights={
 }
 
 # PSO BOUNDS LIMITS
-MAX_VALUES_LAYERS_ALEX_NET = [256, 256, 256, 256, 256, 256, 256, 128] # 6 convs, 1 dense and batch size
-MAX_VALUES_LAYERS_VGG_NET = [256, 256, 256, 256, 256, 256, 128] # 5 convs, 1 dense and batch_size
-MAX_VALUES_LAYERS_RESNET_NET = [256, 256, 256, 256, 256, 256, 256, 256, 128] ## 8 convs and batch size
+MAX_VALUES_LAYERS_ALEX_NET = [128, 128, 140, 196, 196, 256, 128, 128] # 6 convs, 1 dense and batch size
+MAX_VALUES_LAYERS_VGG_NET = [128, 128, 128, 150, 196, 128, 128] # 5 convs, 1 dense and batch_size
+MAX_VALUES_LAYERS_RESNET_NET = [128, 128, 128, 196, 196, 256, 256, 128, 128] ## 8 convs and batch size
 MIN_BATCH_SIZE = 16
 
 #FILENAME POSITION PSO VARIATION
@@ -177,13 +182,13 @@ pso_init_args_alex = (
 pso_init_args_vgg = (
     PARTICLES,  # number of individuals
     ITERATIONS,  # iterations
-    7,  # dimensions (6 conv filters, 1 dense neurons and batch size)
+    7,  # dimensions (5 conv filters, 1 dense neurons and batch size)
     np.array(MAX_VALUES_LAYERS_VGG_NET)  # superior bound limits for dimensions
 )
 
 pso_init_args_resnet = (
     PARTICLES,  # number of individuals
     ITERATIONS,  # iterations
-    9,  # dimensions (6 conv filters, 1 dense neurons and batch size)
+    10,  # dimensions (9 conv filters and batch size)
     np.array(MAX_VALUES_LAYERS_RESNET_NET)  # superior bound limits for dimensions
 )

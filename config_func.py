@@ -452,3 +452,9 @@ def print_final_results(y_test, predictions, history, dict=False):
 
     except:
         raise
+
+def print_log_message():
+    CRED = '\033[91m'
+    CBOLD = '\33[1m'
+    CEND = '\033[0m'
+    print("\n"+CRED+ CBOLD +"Seq: {}".format(next(config.counter_iterations))+CEND)

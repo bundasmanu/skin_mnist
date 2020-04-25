@@ -13,7 +13,7 @@ from keras.models import load_model
 import keras
 import os
 import numpy as np
-#os.environ["CUDA_VISIBLE_DEVICES"]="-1"  #THIS LINE DISABLES GPU OPTIMIZATION
+os.environ["CUDA_VISIBLE_DEVICES"]="-1"  #THIS LINE DISABLES GPU OPTIMIZATION
 
 def main():
 
@@ -170,7 +170,7 @@ def main():
     vggnet.addStrategy(data_augment)
 
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
-    filters_cnn = (16, 16, 32, 32, 48, 72)
+    filters_cnn = (16, 16, 32, 32, 48)
     dense_neurons = (16, 8)
     batch_size = (config.BATCH_SIZE_ALEX_AUG, )
 
