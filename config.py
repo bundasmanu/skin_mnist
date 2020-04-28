@@ -156,7 +156,7 @@ class_weights={
 # PSO BOUNDS LIMITS
 MAX_VALUES_LAYERS_ALEX_NET = [128, 128, 140, 196, 196, 256, 128, 128] # 6 convs, 1 dense and batch size
 MAX_VALUES_LAYERS_VGG_NET = [128, 128, 128, 150, 196, 128, 128] # 5 convs, 1 dense and batch_size
-MAX_VALUES_LAYERS_RESNET_NET = [128, 128, 128, 196, 196, 256, 256, 128, 128] ## 8 convs and batch size
+MAX_VALUES_LAYERS_RESNET_NET = [128, 128, 128, 196, 196, 196, 196, 196, 196, 128] ## 8 convs and batch size
 MIN_BATCH_SIZE = 16
 
 #FILENAME POSITION PSO VARIATION
