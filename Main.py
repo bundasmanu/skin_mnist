@@ -204,11 +204,11 @@ def main():
     resnet.addStrategy(data_augment)
 
     # APPLY BUILD, TRAIN AND PREDICT
-    #model, predictions, history = resnet.template_method(*resnet_args)
+    model, predictions, history = resnet.template_method(*resnet_args)
     #resnet.save(model, config.RES_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
-    #config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
+    config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
 
     ## --------------------------- ENSEMBLE OF MODELS ------------------------------------
 
@@ -231,20 +231,20 @@ def main():
     ## --------------------------- PSO ------------------------------------------------
 
     # optimizer fabric object
-    opt_fact = OptimizerFactory.OptimizerFactory()
-
-    # definition models optimizers
-    pso_alex = opt_fact.createOptimizer(config.PSO_OPTIMIZER, alexNet, *config.pso_init_args_alex)
-    pso_vgg = opt_fact.createOptimizer(config.PSO_OPTIMIZER, vggnet, *config.pso_init_args_vgg)
-    pso_resnet = opt_fact.createOptimizer(config.PSO_OPTIMIZER, resnet, *config.pso_init_args_resnet)
-
-    # optimize and print best cost
-    cost, pos, optimizer = pso_alex.optimize()
-    print(cost)
-    print(pos)
-    pso_alex.plotCostHistory(optimizer)
-    pso_alex.plotPositionHistory(optimizer, np.array(config.X_LIMITS), np.array(config.Y_LIMITS), config.POS_VAR_EXP,
-                               config.LABEL_X_AXIS, config.LABEL_Y_AXIS)
+    # opt_fact = OptimizerFactory.OptimizerFactory()
+    #
+    # # definition models optimizers
+    # pso_alex = opt_fact.createOptimizer(config.PSO_OPTIMIZER, alexNet, *config.pso_init_args_alex)
+    # pso_vgg = opt_fact.createOptimizer(config.PSO_OPTIMIZER, vggnet, *config.pso_init_args_vgg)
+    # pso_resnet = opt_fact.createOptimizer(config.PSO_OPTIMIZER, resnet, *config.pso_init_args_resnet)
+    #
+    # # optimize and print best cost
+    # cost, pos, optimizer = pso_alex.optimize()
+    # print(cost)
+    # print(pos)
+    # pso_alex.plotCostHistory(optimizer)
+    # pso_alex.plotPositionHistory(optimizer, np.array(config.X_LIMITS), np.array(config.Y_LIMITS), config.POS_VAR_EXP,
+    #                            config.LABEL_X_AXIS, config.LABEL_Y_AXIS)
 
 if __name__ == "__main__":
     main()

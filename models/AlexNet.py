@@ -117,7 +117,6 @@ class AlexNet(Model.Model):
 
             if model is None:
                 raise CustomError.ErrorCreationModel(config.ERROR_NO_MODEL)
-                return None
 
             # OPTIMIZER
             opt = Adam(learning_rate=config.LEARNING_RATE, decay=config.DECAY)

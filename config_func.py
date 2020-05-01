@@ -199,6 +199,11 @@ def normalize(X_train, X_val, X_test):
         X_val = (X_val-mean)/(std+1e-7)
         X_test = (X_test-mean)/(std+1e-7)
 
+        # transform float64 numpy arrays to float32, in order to reduce memory usage
+        #X_train = X_train.astype(np.float32)
+        #X_val = X_val.astype(np.float32)
+        #X_test = X_test.astype(np.float32)
+
         # minmax_scale = preprocessing.MinMaxScaler().fit(X_train)
         # X_train = minmax_scale.transform(X_train)
         # X_val = minmax_scale.transform(X_val)
