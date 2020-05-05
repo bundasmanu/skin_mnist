@@ -66,7 +66,7 @@ VALIDATION_ACCURACY = "val_accuracy"
 
 BATCH_SIZE_ALEX_NO_AUG = 32
 BATCH_SIZE_ALEX_AUG = 32
-EPOCHS = 12
+EPOCHS = 15
 MULTIPROCESSING = True
 SHUFFLE = True
 
@@ -121,8 +121,8 @@ ERROR_ON_UNET_STRATEGY = "\nError on U-Net strategy applying"
 
 #PSO OPTIONS
 TOPOLOGY_FLAG = 0 # 0 - GBest , 1 - LBest
-PARTICLES = 2
-ITERATIONS = 2
+PARTICLES = 20
+ITERATIONS = 12
 gbestOptions = {'w' : 0.9, 'c1' : 0.7, 'c2' : 0.7}
 lbestOptions = {'w' : 0.9, 'c1' : 0.7, 'c2' : 0.7, 'k' : 4, 'p' : 2}
 
@@ -149,15 +149,17 @@ class_weights={
     2: 1.5, # bkl
     3: 3.0, # df
     4: 3.0, # mel # Try to make the model more sensitive to Melanoma.
-    5: 1.0, # nv
-    6: 1.0, # vasc
+    5: 1.2, # nv
+    6: 1.2, # vasc
 }
 
 # PSO BOUNDS LIMITS
 MAX_VALUES_LAYERS_ALEX_NET = [128, 128, 140, 196, 196, 256, 128, 128] # 6 convs, 1 dense and batch size
+MIN_VALUES_LAYERS_ALEX_NET = [1, 1, 1, 1, 1, 1, 14, 16]
 MAX_VALUES_LAYERS_VGG_NET = [128, 128, 128, 150, 196, 128, 128] # 5 convs, 1 dense and batch_size
-MAX_VALUES_LAYERS_RESNET_NET = [128, 128, 128, 196, 196, 196, 196, 196, 196, 128] ## 8 convs and batch size
-MIN_BATCH_SIZE = 16
+MIN_VALUES_LAYERS_VGG_NET = [1, 1, 1, 1, 1, 14, 16]
+MAX_VALUES_LAYERS_RESNET_NET = [128, 128, 128, 196, 196, 196, 196, 196, 196, 128] ## 9 convs and batch size
+MIN_VALUES_LAYERS_RES_NET = [1, 1, 1, 1, 1, 1, 1, 1, 1, 16]
 
 #FILENAME POSITION PSO VARIATION
 POS_VAR_LOWER = 'particlesPso.mp4'
@@ -176,6 +178,7 @@ pso_init_args_alex = (
     PARTICLES,  # number of individuals
     ITERATIONS,  # iterations
     8,  # dimensions (6 conv filters, 1 dense neurons and batch size)
+    np.array(MIN_VALUES_LAYERS_ALEX_NET),
     np.array(MAX_VALUES_LAYERS_ALEX_NET)  # superior bound limits for dimensions
 )
 
@@ -183,6 +186,7 @@ pso_init_args_vgg = (
     PARTICLES,  # number of individuals
     ITERATIONS,  # iterations
     7,  # dimensions (5 conv filters, 1 dense neurons and batch size)
+    np.array(MIN_VALUES_LAYERS_VGG_NET),
     np.array(MAX_VALUES_LAYERS_VGG_NET)  # superior bound limits for dimensions
 )
 
@@ -190,5 +194,6 @@ pso_init_args_resnet = (
     PARTICLES,  # number of individuals
     ITERATIONS,  # iterations
     10,  # dimensions (9 conv filters and batch size)
+    np.array(MIN_VALUES_LAYERS_RES_NET),
     np.array(MAX_VALUES_LAYERS_RESNET_NET)  # superior bound limits for dimensions
 )

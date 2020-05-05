@@ -17,8 +17,9 @@ import gc
 class PSO(Optimizer.Optimizer):
 
     def __init__(self, model : Model.Model, *args): #DIMENSIONS NEED TO BE EQUAL TO NUMBER OF LAYERS ON MODEL
+        self.limit_infer = args[-2]
         self.limit_super = args[-1] # last argument
-        super(PSO, self).__init__(model, *args[:-1]) # all args except last one
+        super(PSO, self).__init__(model, *args[:-2]) # all args except last one
 
     def plotCostHistory(self, optimizer):
 
@@ -76,9 +77,10 @@ class PSO(Optimizer.Optimizer):
             totalDimensions = self.dims
 
             minBounds = np.ones(totalDimensions)
-            minBounds[totalDimensions - 1] = minBounds[totalDimensions - 1] * config.MIN_BATCH_SIZE  # min batch size
-            maxBounds = np.ones(totalDimensions)
+            minBounds = [minBounds[j] * i for i, j in zip(self.limit_infer, range(totalDimensions))] # min batch size
+            minBounds = np.array(minBounds)
 
+            maxBounds = np.ones(totalDimensions)
             maxBounds = [maxBounds[j] * i for i, j in zip(self.limit_super, range(totalDimensions))]
             maxBounds = np.array(maxBounds)
 
