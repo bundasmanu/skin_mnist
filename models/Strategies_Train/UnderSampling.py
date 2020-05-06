@@ -35,8 +35,8 @@ class UnderSampling(Strategy.Strategy):
             numberValues = np.array(numberValues)
             numberValues = numberValues.reshape(numberValues.shape[0] * numberValues.shape[1])
             occorrences_counter = np.bincount(numberValues)
-            print("\nNumber samples Class 0: ", occorrences_counter[0])
-            print("\nNumber samples Class 1: ", occorrences_counter[1])
+            #print("\nNumber samples Class 0: ", occorrences_counter[0])
+            #print("\nNumber samples Class 1: ", occorrences_counter[1])
 
             underSampler = RandomUnderSampler(random_state=0) #ALLOWS REPRODUCIBILITY
 
@@ -56,8 +56,8 @@ class UnderSampling(Strategy.Strategy):
             del deepData
 
             occorrences_counter = np.bincount(decoded_ytrain)
-            print("\nNumber samples Class 0: ", occorrences_counter[0])
-            print("\nNumber samples Class 1: ", occorrences_counter[1])
+            #print("\nNumber samples Class 0: ", occorrences_counter[0])
+            #print("\nNumber samples Class 1: ", occorrences_counter[1])
 
             #TRANSFORM Y_DECODED TO CATEGORICAL AGAIN
             decoded_ytrain = keras.utils.to_categorical(decoded_ytrain, config.NUMBER_CLASSES)

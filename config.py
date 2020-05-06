@@ -66,7 +66,7 @@ VALIDATION_ACCURACY = "val_accuracy"
 
 BATCH_SIZE_ALEX_NO_AUG = 32
 BATCH_SIZE_ALEX_AUG = 32
-EPOCHS = 15
+EPOCHS = 1
 MULTIPROCESSING = True
 SHUFFLE = True
 
@@ -121,8 +121,8 @@ ERROR_ON_UNET_STRATEGY = "\nError on U-Net strategy applying"
 
 #PSO OPTIONS
 TOPOLOGY_FLAG = 0 # 0 - GBest , 1 - LBest
-PARTICLES = 20
-ITERATIONS = 12
+PARTICLES = 2
+ITERATIONS = 2
 gbestOptions = {'w' : 0.9, 'c1' : 0.7, 'c2' : 0.7}
 lbestOptions = {'w' : 0.9, 'c1' : 0.7, 'c2' : 0.7, 'k' : 4, 'p' : 2}
 
@@ -197,3 +197,7 @@ pso_init_args_resnet = (
     np.array(MIN_VALUES_LAYERS_RES_NET),
     np.array(MAX_VALUES_LAYERS_RESNET_NET)  # superior bound limits for dimensions
 )
+
+## verbose and summary options on build and train
+TRAIN_VERBOSE = 0 # 0 - no info, 1- info, 2- partial info
+BUILD_SUMMARY = 0 # 0 - no summary, 1- summary
