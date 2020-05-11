@@ -147,12 +147,19 @@ def main():
     alexNet.addStrategy(data_augment)
 
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
-    filters_cnn = (96, 96, 96, 72, 64, 64)
-    dense_neurons = (14, )
-    batch_size = (config.BATCH_SIZE_ALEX_AUG, )
+    # definition of args to pass to template_method (conv's number of filters, dense neurons and batch size)
+    alex_args = (
+        2, # number of normal convolutional layer (+init conv)
+        3, # number of stack cnn layers
+        16, # number of feature maps of initial conv layer
+        16, # growth rate
+        1, # number of FCL Layers
+        16, # number neurons of Full Connected Layer
+        config.BATCH_SIZE_ALEX_AUG # batch size
+    )
 
     # APPLY BUILD, TRAIN AND PREDICT
-    #model, predictions, history = alexNet.template_method(*(filters_cnn+dense_neurons+batch_size))
+    #model, predictions, history = alexNet.template_method(*alex_args)
 
     ## PLOT FINAL RESULTS
     #config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
@@ -170,12 +177,17 @@ def main():
     vggnet.addStrategy(data_augment)
 
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
-    filters_cnn = (16, 16, 32, 32, 48)
-    dense_neurons = (16, 8)
-    batch_size = (config.BATCH_SIZE_ALEX_AUG, )
+    vgg_args = (
+        6,  # number of stack cnn layers (+ init stack)
+        32,  # number of feature maps of initial conv layer
+        12,  # growth rate
+        1, # number of FCL Layers
+        16,  # number neurons of Full Connected Layer
+        config.BATCH_SIZE_ALEX_AUG  # batch size
+    )
 
     # APPLY BUILD, TRAIN AND PREDICT
-    #model, predictions, history = vggnet.template_method(*(filters_cnn+dense_neurons+batch_size))
+    #model, predictions, history = vggnet.template_method(*vgg_args)
     #vggnet.save(model, config.VGG_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
@@ -183,25 +195,23 @@ def main():
 
     ## ---------------------------RESNET APPLICATION ------------------------------------
 
-    ## definition number cnn and dense layers of resnet
-    number_cnn_dense = (9 ,0)
+    # number of conv and dense layers respectively
+    number_cnn_dense = (5, 1)
 
-    ## definition filters of resnet
-    initial_conv = (72,)
-    conv2_stage = (72, 84)
-    conv3_stage = (84, 96)
-    conv4_stage = (96, 128)
-    conv5_stage = (128, 128)
-    batch_size = (config.BATCH_SIZE_ALEX_AUG, )
-    resnet_args = (
-        initial_conv + conv2_stage + conv3_stage +
-        conv4_stage + conv5_stage + batch_size
-    )
-
-    ## GET MODEL AND DEFINE STRATEGIES
+    # creation of ResNet instance
     resnet = model_fact.getModel(config.RES_NET, data_obj, *number_cnn_dense)
+
+    # apply strategies to resnet
     resnet.addStrategy(oversampling)
     resnet.addStrategy(data_augment)
+
+    # definition of args to pass to template_method (conv's number of filters, dense neurons and batch size)
+    resnet_args = (
+        32,  # number of filters of initial CNN layer
+        4,  # number of consecutive conv+identity blocks
+        8,  # growth rate
+        config.BATCH_SIZE_ALEX_AUG,  # batch size
+    )
 
     # APPLY BUILD, TRAIN AND PREDICT
     #model, predictions, history = resnet.template_method(*resnet_args)
@@ -239,11 +249,11 @@ def main():
     pso_resnet = opt_fact.createOptimizer(config.PSO_OPTIMIZER, resnet, *config.pso_init_args_resnet)
 
     # optimize and print best cost
-    cost, pos, optimizer = pso_alex.optimize()
-    print(cost)
-    print(pos)
-    pso_alex.plotCostHistory(optimizer)
-    pso_alex.plotPositionHistory(optimizer, np.array(config.X_LIMITS), np.array(config.Y_LIMITS), config.POS_VAR_EXP,
+    cost, pos, optimizer = pso_resnet.optimize()
+    print("Custo: {}".format(cost))
+    config_func.print_Best_Position_PSO(pos, config.RES_NET) # print position
+    pso_resnet.plotCostHistory(optimizer)
+    pso_resnet.plotPositionHistory(optimizer, np.array(config.X_LIMITS), np.array(config.Y_LIMITS), config.POS_VAR_EXP,
                                config.LABEL_X_AXIS, config.LABEL_Y_AXIS)
 
 if __name__ == "__main__":

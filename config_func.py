@@ -458,6 +458,41 @@ def print_final_results(y_test, predictions, history, dict=False):
     except:
         raise
 
+def print_Best_Position_PSO(dimensions, modelType):
+
+    '''
+    This function prints convert float dimensions position of best particle
+    :param dimensions: numpy array of shape (dimensions of model, )
+    :param modelType: str --> model type
+    :return:
+    '''
+
+    try:
+
+        if modelType == config.ALEX_NET:
+            print("Nº normal conv's: {}".format(math.trunc(dimensions[0])))
+            print("Nº stack conv's: {}".format(math.trunc(dimensions[1])))
+            print("Initial nº of feature maps: {}".format(math.trunc(dimensions[2])))
+            print("Growth rate: {}".format(math.trunc(dimensions[3])))
+            print("Nº Dense layers: {}".format(math.trunc(dimensions[4])))
+            print("Number of Feature Maps on Dense layers: {}".format(math.trunc(dimensions[5])))
+            print("Batch Size: {}".format(math.trunc(dimensions[6])))
+        elif modelType == config.VGG_NET:
+            print("Nº stack conv's: {}".format(math.trunc(dimensions[0])))
+            print("Initial nº of feature maps: {}".format(math.trunc(dimensions[1])))
+            print("Growth rate: {}".format(math.trunc(dimensions[2])))
+            print("Nº Dense layers: {}".format(math.trunc(dimensions[3])))
+            print("Number of Feature Maps on Dense layers: {}".format(math.trunc(dimensions[4])))
+            print("Batch Size: {}".format(math.trunc(dimensions[5])))
+        else:
+            print("Number Residual Blocks: {}".format(math.trunc(dimensions[0])))
+            print("Initial nº of feature maps: {}".format(math.trunc(dimensions[1])))
+            print("Growth rate: {}".format(math.trunc(dimensions[2])))
+            print("Batch Size: {}".format(math.trunc(dimensions[3])))
+
+    except:
+        raise
+
 def print_log_message():
     CRED = '\033[91m'
     CBOLD = '\33[1m'

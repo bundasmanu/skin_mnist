@@ -46,13 +46,13 @@ class ResNet(Model.Model):
             tensor_input = Conv2D(filters=args[1], padding=config.SAME_PADDING, kernel_size=(3,3), strides=1,
                                   kernel_initializer=glorot_uniform(config.GLOROT_SEED), kernel_regularizer=l2(config.DECAY))(tensor_input)
             tensor_input = BatchNormalization(axis=3) (tensor_input) ## perform batch normalization alongside channels axis [samples, width, height, channels]
-            tensor_input = Activation(config.RELU_FUNCTION) (tensor_input)
+            #tensor_input = Activation(config.RELU_FUNCTION) (tensor_input)
 
             ## now i need to merge initial input and identity block created, this is passed to activation function
             tensor_input = Add() ([tensor_input, input])
             tensor_input = Activation(config.RELU_FUNCTION) (tensor_input)
 
-            return  tensor_input
+            return tensor_input
 
         except:
             raise CustomError.ErrorCreationModel(config.ERROR_ON_IDENTITY_BLOCK)
@@ -98,11 +98,15 @@ class ResNet(Model.Model):
 
     def build(self, *args, trainedModel=None) -> Sequential:
 
+        # resnet v1, based on: https://keras.io/examples/cifar10_resnet/
+        # ----------PAPER------------- https://arxiv.org/pdf/1512.03385.pdf
+        # ---------RESNET 18 AND 34 ARCHITECTURE: https://datascience.stackexchange.com/questions/33022/how-to-interpert-resnet50-layer-types/47489
+        # ---------VERY GOOD EXPLANATION: http://ethen8181.github.io/machine-learning/keras/resnet_cam/resnet_cam.html#Identity-Block
         ## model based on resnet-18 approach and described in paper cited in identity_block and convolution_block functions
-
+        ## INFO THAT RESNET DOESN'T USE FULLY CONNECTED LAYERS (ONLY OUTPUT LAYER) --> https://stackoverflow.com/questions/44925467/does-resnet-have-fully-connected-layers
         try:
 
-            #IF USER ALREADY HAVE A TRAINED MODEL, AND NO WANTS TO BUILD AGAIN A NEW MODEL
+            # IF USER ALREADY HAVE A TRAINED MODEL, AND NO WANTS TO BUILD AGAIN A NEW MODEL
             if trainedModel != None:
                 return trainedModel
 
@@ -112,41 +116,33 @@ class ResNet(Model.Model):
             X = ZeroPadding2D((3, 3))(input_shape)
 
             ## normal convolution layer --> first entry
-            X = Conv2D(filters=args[0], kernel_size=(5,5), strides=2,
-                       kernel_initializer=glorot_uniform(config.GLOROT_SEED), kernel_regularizer=l2(config.DECAY)) (X)
-            X = BatchNormalization(axis=3) (X)
-            X = Activation(config.RELU_FUNCTION) (X)
-            X = MaxPooling2D(pool_size=(2,2), strides=2) (X)
+            X = Conv2D(filters=args[0], kernel_size=(5, 5), strides=2, padding=config.SAME_PADDING,
+                       kernel_initializer=glorot_uniform(config.GLOROT_SEED), kernel_regularizer=l2(config.DECAY))(X)
+            X = BatchNormalization(axis=3)(X)
+            X = Activation(config.RELU_FUNCTION)(X)
+            X = MaxPooling2D(pool_size=(2, 2), strides=2)(X)
 
-            ## conv2_x
-            X = self.convolution_block(X, *(args[1], args[2]))
-            X = self.identity_block(X, *(args[1], args[2]))
+            ## loop of convolution and identity blocks
+            numberFilters = args[0]
+            for i in range(args[1]):
+                X = self.convolution_block(X, *(numberFilters, (numberFilters + args[2])))
+                X = self.identity_block(X, *(numberFilters, (numberFilters + args[2])))
+                numberFilters += args[2]
 
-            ## conv3_x
-            X = self.convolution_block(X, *(args[3], args[4]))
-            X = self.identity_block(X, *(args[3], args[4]))
+            X = AveragePooling2D(pool_size=(2, 2), strides=2)(X)
 
-            ## conv4_x
-            X = self.convolution_block(X, *(args[5], args[6]))
-            X = self.identity_block(X, *(args[5], args[6]))
+            X = Flatten()(X)
 
-            ## conv5_x
-            X = self.convolution_block(X, *(args[7], args[8]))
-            X = self.identity_block(X, *(args[7], args[8]))
-
-            X = AveragePooling2D(pool_size=(2,2), strides=2) (X)
-
-            X = Flatten() (X)
-            X = Dense(units=config.NUMBER_CLASSES, kernel_initializer= glorot_uniform(config.GLOROT_SEED),
-                      kernel_regularizer=l2(config.DECAY)) (X)
-            X = Activation(config.SOFTMAX_FUNCTION) (X)
+            X = Dense(units=config.NUMBER_CLASSES, kernel_initializer=glorot_uniform(config.GLOROT_SEED),
+                      kernel_regularizer=l2(config.DECAY))(X)
+            X = Activation(config.SOFTMAX_FUNCTION)(X)
 
             ## finally model creation
             model = mp(inputs=input_shape, outputs=X)
 
             if config.BUILD_SUMMARY == 1:
                 model.summary()
-            #plot_model(model, show_shapes=True, to_file='residual_module.png')
+            # plot_model(model, show_shapes=True, to_file='residual_module.png')
 
             return model
 
