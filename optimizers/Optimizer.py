@@ -19,15 +19,6 @@ class Optimizer(ABC):
     def objectiveFunction(self, acc, *args):
 
         '''
-
-        :param score: final score on train
-        :param args: values of model layers --> the number of args need to be equal to total of layer used
-                    e.g: args: (32, 48, 64, 32, 16) --> the sum of nCNNLayers and nDenseLayers need to be equal to number of args
-                    last argument is metrics report
-        :return: lost function
-        '''
-
-        '''
         :param score: final score on train
         :param args: first argument is a Keras Model
                     last argument is a confusion matrix

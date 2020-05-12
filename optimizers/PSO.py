@@ -109,6 +109,7 @@ class PSO(Optimizer.Optimizer):
             for i in range(particles.shape[0]):
                 config_func.print_log_message()
                 int_converted_values = [math.trunc(i) for i in particles[i]] #CONVERSION OF DIMENSION VALUES OF PARTICLE
+                print(int_converted_values)
                 model, predictions, history = self.model.template_method(*int_converted_values) #APPLY BUILD, TRAIN AND PREDICT MODEL OPERATIONS, FOR EACH PARTICLE AND ITERATION
                 decoded_predictions = config_func.decode_array(predictions)
                 decoded_y_true = config_func.decode_array(self.model.data.y_test)

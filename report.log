@@ -135,3 +135,11 @@
 2020-05-11 23:50:48,236 - tensorflow - WARNING - Tensor._shape is private, use Tensor.shape instead. Tensor._shape will eventually be removed.
 2020-05-11 23:53:13,773 - pyswarms.single.global_best - INFO - Optimize for 2 iters with {'w': 0.9, 'c1': 0.7, 'c2': 0.7}
 2020-05-12 00:15:38,392 - pyswarms.single.global_best - INFO - Optimize for 2 iters with {'w': 0.9, 'c1': 0.7, 'c2': 0.7}
+2020-05-12 12:33:50,116 - pyswarms.single.global_best - INFO - Optimize for 2 iters with {'w': 0.9, 'c1': 0.7, 'c2': 0.7}
+2020-05-12 13:08:35,521 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 3.757319207587349, best pos: [ 7.64138161  3.05981147 21.24971943 10.93889002]
+2020-05-12 13:08:35,803 - matplotlib.animation - INFO - Animation.save using <class 'matplotlib.animation.HTMLWriter'>
+2020-05-12 14:26:15,359 - pyswarms.single.global_best - INFO - Optimize for 2 iters with {'w': 0.9, 'c1': 0.7, 'c2': 0.7}
+2020-05-12 14:45:49,823 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 5.534795351163771, best pos: [7.78513942e-02 7.63838553e-01 1.24873822e+02 4.37111659e+01
+ 1.95189475e+00 6.75407353e+01 1.32559911e+02]
+2020-05-12 14:45:50,105 - matplotlib.animation - INFO - Animation.save using <class 'matplotlib.animation.HTMLWriter'>
+2020-05-12 14:52:07,475 - pyswarms.single.global_best - INFO - Optimize for 2 iters with {'w': 0.9, 'c1': 0.7, 'c2': 0.7}

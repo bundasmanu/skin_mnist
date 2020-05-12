@@ -485,8 +485,8 @@ def print_Best_Position_PSO(dimensions, modelType):
             print("Number of Feature Maps on Dense layers: {}".format(math.trunc(dimensions[4])))
             print("Batch Size: {}".format(math.trunc(dimensions[5])))
         else:
-            print("Number Residual Blocks: {}".format(math.trunc(dimensions[0])))
-            print("Initial nº of feature maps: {}".format(math.trunc(dimensions[1])))
+            print("Initial nº of feature maps: {}".format(math.trunc(dimensions[0])))
+            print("Number Residual Blocks: {}".format(math.trunc(dimensions[1])))
             print("Growth rate: {}".format(math.trunc(dimensions[2])))
             print("Batch Size: {}".format(math.trunc(dimensions[3])))
 
