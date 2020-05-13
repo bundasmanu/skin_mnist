@@ -1,14 +1,13 @@
 from abc import ABC, abstractmethod
 from keras.models import Sequential
-from typing import Tuple, List
-from .Strategies_Train import OverSampling, UnderSampling, DataAugmentation, Strategy
+from typing import Tuple
+from .Strategies_Train import Strategy
 from keras.callbacks.callbacks import History
-import config
+import config, config_func
 from exceptions import CustomError
 import numpy as np
 import keras
 import Data
-import matplotlib.pyplot as plt
 
 class Model(ABC):
 

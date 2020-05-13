@@ -425,10 +425,31 @@ def ensemble(models):
         average = Average() (models_out)
 
         ## define model with new outputs
-
         model = mp(input_model, average, name='ensemble')
 
         return model
+
+    except:
+        raise
+
+def show_predict_per_class(prediction):
+
+    '''
+    This function shows the percentage by class in a prediction
+    :param prediction: numpy array with a prediction of a simple sample
+    :return: dict of shape: {class1: percentage, class2: percentage,  ...}
+    '''
+
+    try:
+
+        # define empty dictionary
+        predict_by_class = {}
+
+        # dictionary definition
+        for i, j in zip(prediction, range(len(prediction))):
+            predict_by_class[config.DICT_TARGETS[j]] = i
+
+        return predict_by_class
 
     except:
         raise
