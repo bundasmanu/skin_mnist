@@ -146,7 +146,7 @@ class PSO(Optimizer.Optimizer):
                 optimizer = ps.single.LocalBestPSO(n_particles=self.indiv, dimensions=self.dims,
                                                     options=config.lbestOptions, bounds=bounds)
 
-            cost, pos = optimizer.optimize(objective_func=self.loopAllParticles, iters=self.iters)
+            cost, pos = optimizer.optimize(objective_func=self.loopAllParticles, iters=self.iters, n_processes=2)
 
             return cost, pos, optimizer
 

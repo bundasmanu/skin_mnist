@@ -125,9 +125,10 @@ class ResNet(Model.Model):
             ## loop of convolution and identity blocks
             numberFilters = args[0]
             for i in range(args[1]):
-                X = self.convolution_block(X, *(numberFilters, (numberFilters + args[2])))
-                X = self.identity_block(X, *(numberFilters, (numberFilters + args[2])))
-                numberFilters += args[2]
+                X = self.convolution_block(X, *(numberFilters, (numberFilters + args[3])))
+                for i in range(args[2]):
+                    X = self.identity_block(X, *(numberFilters, (numberFilters + args[3])))
+                numberFilters += args[3]
 
             X = AveragePooling2D(pool_size=(2, 2), strides=2)(X)
 

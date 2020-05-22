@@ -5,8 +5,8 @@ import itertools
 counter_iterations = itertools.count(start=0, step=1)
 
 # image dimensions
-WIDTH = 128
-HEIGHT = 128
+WIDTH = 80
+HEIGHT = 80
 CHANNELS = 3
 
 STANDARDIZE_AXIS_CHANNELS = (0,1,2,3)
@@ -66,7 +66,7 @@ VALIDATION_ACCURACY = "val_accuracy"
 
 BATCH_SIZE_ALEX_NO_AUG = 32
 BATCH_SIZE_ALEX_AUG = 32
-EPOCHS = 1
+EPOCHS = 18
 MULTIPROCESSING = True
 SHUFFLE = True
 
@@ -155,11 +155,11 @@ class_weights={
 
 # PSO BOUNDS LIMITS
 MAX_VALUES_LAYERS_ALEX_NET = [3, 4, 128, 50, 3, 128, 180] # nº of normal conv's, nº of stack cnn layers, nº of feature maps of initial conv, growth rate, nº neurons of FCL layer and batch size
-MIN_VALUES_LAYERS_ALEX_NET = [0, 0, 8, 0, 1, 14, 8]
+MIN_VALUES_LAYERS_ALEX_NET = [0, 1, 8, 0, 1, 14, 8]
 MAX_VALUES_LAYERS_VGG_NET = [7, 128, 50, 3, 128, 180] # nº of stack cnn layers, nº of feature maps of initial conv, growth rate, nº neurons of FCL layer and batch size
 MIN_VALUES_LAYERS_VGG_NET = [1, 8, 0, 1, 14, 8]
-MAX_VALUES_LAYERS_RESNET_NET = [64, 6, 50, 128] # number of filters of first conv layer, number of conv+identity blocks, growth rate and batch size
-MIN_VALUES_LAYERS_RES_NET = [1, 1, 0, 8]
+MAX_VALUES_LAYERS_RESNET_NET = [80, 6, 3, 50, 128] # number of filters of first conv layer, number of conv+identity blocks, growth rate and batch size
+MIN_VALUES_LAYERS_RES_NET = [1, 1, 1, 0, 8]
 
 #FILENAME POSITION PSO VARIATION
 POS_VAR_LOWER = 'particlesPso.mp4'
@@ -193,7 +193,7 @@ pso_init_args_vgg = (
 pso_init_args_resnet = (
     PARTICLES,  # number of individuals
     ITERATIONS,  # iterations
-    4,  # number of filters of first conv layer, number of conv+identity blocks, growth rate and batch size
+    5,  # number of filters of first conv layer, number of conv+identity blocks, nº of identity blocks, growth rate and batch size
     np.array(MIN_VALUES_LAYERS_RES_NET),
     np.array(MAX_VALUES_LAYERS_RESNET_NET)  # superior bound limits for dimensions
 )

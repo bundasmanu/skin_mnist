@@ -13,7 +13,7 @@ from keras.models import load_model
 import keras
 import os
 import numpy as np
-os.environ["CUDA_VISIBLE_DEVICES"]="-1"  #THIS LINE DISABLES GPU OPTIMIZATION
+#os.environ["CUDA_VISIBLE_DEVICES"]="-1"  #THIS LINE DISABLES GPU OPTIMIZATION
 
 def main():
 
@@ -149,8 +149,8 @@ def main():
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
     # definition of args to pass to template_method (conv's number of filters, dense neurons and batch size)
     alex_args = (
-        2, # number of normal convolutional layer (+init conv)
-        3, # number of stack cnn layers
+        1, # number of normal convolutional layer (+init conv)
+        2, # number of stack cnn layers
         16, # number of feature maps of initial conv layer
         16, # growth rate
         1, # number of FCL Layers
@@ -178,7 +178,7 @@ def main():
 
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
     vgg_args = (
-        6,  # number of stack cnn layers (+ init stack)
+        5,  # number of stack cnn layers (+ init stack)
         32,  # number of feature maps of initial conv layer
         12,  # growth rate
         1, # number of FCL Layers
@@ -209,6 +209,7 @@ def main():
     resnet_args = (
         32,  # number of filters of initial CNN layer
         4,  # number of consecutive conv+identity blocks
+        1, # number of identity block in each (conv+identity) block
         8,  # growth rate
         config.BATCH_SIZE_ALEX_AUG,  # batch size
     )
