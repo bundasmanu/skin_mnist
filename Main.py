@@ -209,8 +209,8 @@ def main():
     resnet_args = (
         32,  # number of filters of initial CNN layer
         4,  # number of consecutive conv+identity blocks
-        1, # number of identity block in each (conv+identity) block
-        8,  # growth rate
+        2, # number of identity block in each (conv+identity) block
+        24,  # growth rate
         config.BATCH_SIZE_ALEX_AUG,  # batch size
     )
 

@@ -71,6 +71,7 @@ MULTIPROCESSING = True
 SHUFFLE = True
 
 GLOROT_SEED = 0
+HE_SEED = 0
 
 X_VAL_ARGS = "X_Val"
 Y_VAL_ARGS = "y_val"
