@@ -200,9 +200,9 @@ def normalize(X_train, X_val, X_test):
         X_test = (X_test-mean)/(std+1e-7)
 
         # transform float64 numpy arrays to float32, in order to reduce memory usage
-        #X_train = X_train.astype(np.float32)
-        #X_val = X_val.astype(np.float32)
-        #X_test = X_test.astype(np.float32)
+        X_train = X_train.astype(np.float32)
+        X_val = X_val.astype(np.float32)
+        X_test = X_test.astype(np.float32)
 
         # minmax_scale = preprocessing.MinMaxScaler().fit(X_train)
         # X_train = minmax_scale.transform(X_train)
@@ -505,11 +505,19 @@ def print_Best_Position_PSO(dimensions, modelType):
             print("Nº Dense layers: {}".format(math.trunc(dimensions[3])))
             print("Number of Feature Maps on Dense layers: {}".format(math.trunc(dimensions[4])))
             print("Batch Size: {}".format(math.trunc(dimensions[5])))
+        elif modelType == config.RES_NET:
+            print("Initial nº of feature maps: {}".format(math.trunc(dimensions[0])))
+            print("Number of Convolutional Blocks: {}".format(math.trunc(dimensions[1])))
+            print("Number Residual Blocks: {}".format(math.trunc(dimensions[2])))
+            print("Growth rate: {}".format(math.trunc(dimensions[3])))
+            print("Batch Size: {}".format(math.trunc(dimensions[4])))
         else:
             print("Initial nº of feature maps: {}".format(math.trunc(dimensions[0])))
-            print("Number Residual Blocks: {}".format(math.trunc(dimensions[1])))
-            print("Growth rate: {}".format(math.trunc(dimensions[2])))
-            print("Batch Size: {}".format(math.trunc(dimensions[3])))
+            print("Number Dense Blocks: {}".format(math.trunc(dimensions[1])))
+            print("Number Composite Blocks: {}".format(math.trunc(dimensions[2])))
+            print("Growth rate: {}".format(math.trunc(dimensions[3])))
+            print("Compression rate: {}".format(dimensions[4]))
+            print("Batch Size: {}".format(math.trunc(dimensions[5])))
 
     except:
         raise

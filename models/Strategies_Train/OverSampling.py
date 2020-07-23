@@ -34,10 +34,15 @@ class OverSampling(Strategy.Strategy):
             numberValues = np.array(numberValues)
             numberValues = numberValues.reshape(numberValues.shape[0] * numberValues.shape[1])
             occorrences_counter = np.bincount(numberValues)
-            #print("\nNumber samples Class 0: ", occorrences_counter[0])
-            #print("\nNumber samples Class 1: ", occorrences_counter[1])
+            # print("\nNumber samples Class 0: ", occorrences_counter[0])
+            # print("\nNumber samples Class 1: ", occorrences_counter[1])
+            # print("\nNumber samples Class 2: ", occorrences_counter[2])
+            # print("\nNumber samples Class 3: ", occorrences_counter[3])
+            # print("\nNumber samples Class 4: ", occorrences_counter[4])
+            # print("\nNumber samples Class 5: ", occorrences_counter[5])
+            # print("\nNumber samples Class 6: ", occorrences_counter[6])
 
-            overSampler = RandomOverSampler(random_state=0)  # ALLOWS REPRODUCIBILITY
+            overSampler = RandomOverSampler(random_state=0, sampling_strategy=config.class_sampling)  # ALLOWS REPRODUCIBILITY
 
             # I NEED TO RESHAPE TRAINING DATA TO 2D ARRAY (SAMPLES, FEATURES)
             X_train = data.reshape4D_to_2D()
@@ -55,15 +60,20 @@ class OverSampling(Strategy.Strategy):
             del deepData
 
             occorrences_counter = np.bincount(decoded_ytrain)
-            #print("\nNumber samples Class 0: ", occorrences_counter[0])
-            #print("\nNumber samples Class 1: ", occorrences_counter[1])
+            # print("\nNumber samples Class 0: ", occorrences_counter[0])
+            # print("\nNumber samples Class 1: ", occorrences_counter[1])
+            # print("\nNumber samples Class 2: ", occorrences_counter[2])
+            # print("\nNumber samples Class 3: ", occorrences_counter[3])
+            # print("\nNumber samples Class 4: ", occorrences_counter[4])
+            # print("\nNumber samples Class 5: ", occorrences_counter[5])
+            # print("\nNumber samples Class 6: ", occorrences_counter[6])
 
             # TRANSFORM Y_DECODED TO CATEGORICAL AGAIN
             decoded_ytrain = keras.utils.to_categorical(decoded_ytrain, config.NUMBER_CLASSES)
 
             # SHUFFLE DATA
             X_train, decoded_ytrain = shuffle(X_train, decoded_ytrain)
-
+            print(X_train.shape)
             return X_train, decoded_ytrain
 
         except:

@@ -38,7 +38,7 @@ class UnderSampling(Strategy.Strategy):
             #print("\nNumber samples Class 0: ", occorrences_counter[0])
             #print("\nNumber samples Class 1: ", occorrences_counter[1])
 
-            underSampler = RandomUnderSampler(random_state=0) #ALLOWS REPRODUCIBILITY
+            underSampler = RandomUnderSampler(random_state=0, sampling_strategy=config.class_sampling2) #ALLOWS REPRODUCIBILITY
 
             #I NEED TO RESHAPE TRAINING DATA TO 2D ARRAY (SAMPLES, FEATURES)
             X_train = data.reshape4D_to_2D()
@@ -64,7 +64,7 @@ class UnderSampling(Strategy.Strategy):
 
             #SHUFFLE DATA
             X_train, decoded_ytrain = shuffle(X_train, decoded_ytrain)
-
+            #print(X_train.shape)
             return X_train, decoded_ytrain
 
         except:

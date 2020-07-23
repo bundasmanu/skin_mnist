@@ -36,8 +36,7 @@ class Optimizer(ABC):
             model = args[0]
             trainable_count = np.sum([K.count_params(w) for w in model.trainable_weights])
 
-            return 1e-15 * trainable_count + 2 * (1.0 - acc) \
-                            + 4 * (1.0 - recall_idc) + 3 * (1.0 - precision_idc)
+            return 1e-9 * trainable_count + 3 * (1.0 - recall_idc) + 3 * (1.0 - precision_idc)
 
         except:
             raise CustomError.ErrorCreationModel(config.ERROR_ON_OPTIMIZATION)

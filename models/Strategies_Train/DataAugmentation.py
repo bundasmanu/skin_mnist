@@ -37,7 +37,6 @@ class DataAugmentation(Strategy.Strategy):
                 data.y_train,
                 shuffle=True,
                 batch_size=config.BATCH_SIZE_ALEX_AUG,
-                ## NEED TO BE COMPLETED
             )
 
             return train_generator

@@ -13,6 +13,7 @@ from keras.models import load_model
 import keras
 import os
 import numpy as np
+#os.environ["TF_CPP_MIN_LOG_LEVEL"]="2"
 #os.environ["CUDA_VISIBLE_DEVICES"]="-1"  #THIS LINE DISABLES GPU OPTIMIZATION
 
 def main():
@@ -58,10 +59,10 @@ def main():
     # STRATIFY X_TEST, X_VAL AND X_TEST
     indexes = np.arange(X.shape[0])
     X_train, X_val, y_train, y_val, indeces_train, indices_val = train_test_split(X, Y, indexes, test_size=config.VALIDATION_SPLIT, shuffle=True,
-                                                      random_state=config.RANDOM_STATE)
+                                                      random_state=config.RANDOM_STATE, stratify=Y)
     indexes = indeces_train
     X_train, X_test, y_train, y_test, indices_train, indices_test = train_test_split(X_train, y_train, indexes, test_size=config.TEST_SPLIT,
-                                                        shuffle=True, random_state=config.RANDOM_STATE)
+                                                        shuffle=True, random_state=config.RANDOM_STATE, stratify=y_train)
 
     print(X_train.shape)
     print(y_train.shape)
@@ -129,7 +130,6 @@ def main():
     model_fact = ModelFactory.ModelFactory()
 
     ## STRATEGIES OF TRAIN INSTANCES
-    undersampling = UnderSampling.UnderSampling()
     oversampling = OverSampling.OverSampling()
     data_augment = DataAugmentation.DataAugmentation()
 
@@ -149,7 +149,7 @@ def main():
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
     # definition of args to pass to template_method (conv's number of filters, dense neurons and batch size)
     alex_args = (
-        1, # number of normal convolutional layer (+init conv)
+        2, # number of normal convolutional layer (+init conv)
         2, # number of stack cnn layers
         16, # number of feature maps of initial conv layer
         16, # growth rate
@@ -207,19 +207,45 @@ def main():
 
     # definition of args to pass to template_method (conv's number of filters, dense neurons and batch size)
     resnet_args = (
-        32,  # number of filters of initial CNN layer
+        16,  # number of filters of initial CNN layer
         4,  # number of consecutive conv+identity blocks
-        2, # number of identity block in each (conv+identity) block
-        24,  # growth rate
+        1, # number of identity block in each (conv+identity) block
+        16,  # growth rate
         config.BATCH_SIZE_ALEX_AUG,  # batch size
     )
 
     # APPLY BUILD, TRAIN AND PREDICT
-    model, predictions, history = resnet.template_method(*resnet_args)
+    #model, predictions, history = resnet.template_method(*resnet_args)
     #resnet.save(model, config.RES_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
-    config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
+    #config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
+
+    ## ---------------------------DENSENET APPLICATION ------------------------------------
+
+    # # DICTIONARIES DEFINITION
+    numberLayers = (
+        4,  # BLOCKS
+        1  # DENSE LAYERS
+    )
+
+    valuesLayers = (
+        24,  # initial number of Feature Maps
+        4,  # number of dense blocks
+        5,  # number of layers in each block
+        12,  # growth rate
+        0.5,  # compression rate
+        config.BATCH_SIZE_ALEX_AUG  # batch size
+    )
+
+    densenet = model_fact.getModel(config.DENSE_NET, data_obj, *numberLayers)
+
+    densenet.addStrategy(oversampling)
+    densenet.addStrategy(data_augment)
+
+    model, predictions, history = densenet.template_method(*valuesLayers)
+
+    config_func.print_final_results(data_obj.y_test, predictions, history)
 
     ## --------------------------- ENSEMBLE OF MODELS ------------------------------------
 
@@ -248,6 +274,7 @@ def main():
     # pso_alex = opt_fact.createOptimizer(config.PSO_OPTIMIZER, alexNet, *config.pso_init_args_alex)
     # pso_vgg = opt_fact.createOptimizer(config.PSO_OPTIMIZER, vggnet, *config.pso_init_args_vgg)
     # pso_resnet = opt_fact.createOptimizer(config.PSO_OPTIMIZER, resnet, *config.pso_init_args_resnet)
+    # pso_densenet = opt_fact.createOptimizer(config.PSO_OPTIMIZER, densenet, *config.pso_init_args_densenet)
     #
     # # optimize and print best cost
     # cost, pos, optimizer = pso_vgg.optimize()

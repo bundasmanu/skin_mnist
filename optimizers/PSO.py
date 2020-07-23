@@ -1,5 +1,5 @@
 from . import Optimizer
-from models import Model
+from models import Model, DenseNet
 from exceptions import CustomError
 import config
 import pyswarms as ps
@@ -108,7 +108,12 @@ class PSO(Optimizer.Optimizer):
             losses = []
             for i in range(particles.shape[0]):
                 config_func.print_log_message()
-                int_converted_values = [math.trunc(i) for i in particles[i]] #CONVERSION OF DIMENSION VALUES OF PARTICLE
+                if isinstance(self.model, DenseNet.DenseNet) == True:
+                    int_converted_values = [math.trunc(j) for j in particles[i][:-2]]
+                    int_converted_values.append(particles[i][-2])  # compression rate --> float
+                    int_converted_values.append(math.trunc(particles[i][-1]))
+                else:
+                    int_converted_values = [math.trunc(i) for i in particles[i]]  # CONVERSION OF DIMENSION VALUES OF PARTICLE
                 print(int_converted_values)
                 model, predictions, history = self.model.template_method(*int_converted_values) #APPLY BUILD, TRAIN AND PREDICT MODEL OPERATIONS, FOR EACH PARTICLE AND ITERATION
                 decoded_predictions = config_func.decode_array(predictions)
@@ -140,10 +145,10 @@ class PSO(Optimizer.Optimizer):
 
             optimizer = None
             if config.TOPOLOGY_FLAG == 0: #global best topology
-                optimizer = ps.single.GlobalBestPSO(n_particles=self.indiv, dimensions=self.dims,
+                optimizer = ps.single.GlobalBestPSO(n_particles=self.indiv, dimensions=self.dims, bh_strategy='shrink', vh_strategy='invert',
                                                     options=config.gbestOptions, bounds=bounds)
             else: #local best topology
-                optimizer = ps.single.LocalBestPSO(n_particles=self.indiv, dimensions=self.dims,
+                optimizer = ps.single.LocalBestPSO(n_particles=self.indiv, dimensions=self.dims, bh_strategy='shrink', vh_strategy='invert',
                                                     options=config.lbestOptions, bounds=bounds)
 
             cost, pos = optimizer.optimize(objective_func=self.loopAllParticles, iters=self.iters, n_processes=2)

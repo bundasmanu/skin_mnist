@@ -6,7 +6,7 @@ import config
 import config_func
 import numpy
 from keras.models import Model as mp, Sequential
-from keras.layers import Conv2D, MaxPooling2D, Activation, Input, BatchNormalization, Dense, Flatten, Add, ZeroPadding2D, AveragePooling2D
+from keras.layers import Conv2D, MaxPooling2D, Activation, Input, BatchNormalization, Dense, Flatten, Add, ZeroPadding2D, AveragePooling2D, GlobalAveragePooling2D
 from keras.callbacks.callbacks import History, ReduceLROnPlateau, EarlyStopping
 from keras.optimizers import Adam
 from keras.initializers import glorot_uniform, he_uniform
@@ -14,6 +14,7 @@ from keras.regularizers import l2
 from keras.utils import plot_model
 from sklearn.utils import class_weight
 from typing import Tuple
+from models.Strategies_Train import DataAugmentation, UnderSampling, OverSampling
 
 class ResNet(Model.Model):
 
@@ -43,7 +44,7 @@ class ResNet(Model.Model):
             tensor_input = BatchNormalization(axis=3) (tensor_input) ## perform batch normalization alongside channels axis [samples, width, height, channels]
             tensor_input = Activation(config.RELU_FUNCTION) (tensor_input)
 
-            tensor_input = Conv2D(filters=args[1], padding=config.SAME_PADDING, kernel_size=(3,3), strides=1,
+            tensor_input = Conv2D(filters=args[0], padding=config.SAME_PADDING, kernel_size=(3,3), strides=1,
                                   kernel_initializer=he_uniform(config.HE_SEED), kernel_regularizer=l2(config.DECAY))(tensor_input)
             tensor_input = BatchNormalization(axis=3) (tensor_input) ## perform batch normalization alongside channels axis [samples, width, height, channels]
             #tensor_input = Activation(config.RELU_FUNCTION) (tensor_input)
@@ -83,7 +84,7 @@ class ResNet(Model.Model):
             tensor_input = Activation(config.RELU_FUNCTION) (tensor_input)
 
             ## definition of shortcut path
-            shortcut_path = Conv2D(filters=args[0], kernel_size=(1,1), strides=args[1], padding=config.VALID_PADDING,
+            shortcut_path = Conv2D(filters=args[0], kernel_size=(1,1), strides=args[1], padding=config.SAME_PADDING,
                                    kernel_initializer=he_uniform(config.HE_SEED), kernel_regularizer=l2(config.DECAY)) (shortcut_path)
             shortcut_path = BatchNormalization(axis=3) (shortcut_path)
 
@@ -120,7 +121,7 @@ class ResNet(Model.Model):
                        kernel_initializer=he_uniform(config.HE_SEED), kernel_regularizer=l2(config.DECAY))(X)
             X = BatchNormalization(axis=3)(X)
             X = Activation(config.RELU_FUNCTION)(X)
-            X = MaxPooling2D(pool_size=(2, 2), strides=2)(X)
+            X = MaxPooling2D(pool_size=(3, 3), strides=2, padding='same')(X)
 
             ## loop of convolution and identity blocks
             numberFilters = args[0]
@@ -130,12 +131,10 @@ class ResNet(Model.Model):
                 else:
                     X = self.convolution_block(X, *(numberFilters, 2)) #next set of building blocks, stride is 2
                 for i in range(args[2]):
-                    X = self.identity_block(X, *(numberFilters, (numberFilters)))
+                    X = self.identity_block(X, *(numberFilters, ))
                 numberFilters += args[3]
 
-            X = AveragePooling2D(pool_size=(2, 2), strides=2)(X)
-
-            X = Flatten()(X)
+            X = GlobalAveragePooling2D()(X)
 
             X = Dense(units=config.NUMBER_CLASSES, kernel_initializer=he_uniform(config.HE_SEED),
                       kernel_regularizer=l2(config.DECAY))(X)
@@ -177,17 +176,27 @@ class ResNet(Model.Model):
             #GET STRATEGIES RETURN DATA, AND IF DATA_AUGMENTATION IS APPLIED TRAIN GENERATOR
             train_generator = None
 
-            if len(self.StrategyList) == 0: #IF USER DOESN'T PRETEND EITHER UNDERSAMPLING AND OVERSAMPLING
-                X_train = self.data.X_train
-                y_train = self.data.y_train
+            # get data
+            X_train = self.data.X_train
+            y_train = self.data.y_train
 
-            else: #USER WANTS AT LEAST UNDERSAMPLING OR OVERSAMPLING
-                X_train, y_train = self.StrategyList[0].applyStrategy(self.data)
-                if len(self.StrategyList) > 1: #USER CHOOSE DATA AUGMENTATION OPTION
-                    train_generator = self.StrategyList[1].applyStrategy(self.data)
+            if self.StrategyList: # if strategylist is not empty
+                for i, j in zip(self.StrategyList, range(len(self.StrategyList))):
+                    if isinstance(i, DataAugmentation.DataAugmentation):
+                        train_generator = self.StrategyList[j].applyStrategy(self.data)
+                    if isinstance(i, OverSampling.OverSampling):
+                        X_train, y_train = self.StrategyList[j].applyStrategy(self.data)
+                    if isinstance(i, UnderSampling.UnderSampling):
+                        X_train, y_train = self.StrategyList[j].applyStrategy(self.data)
+
+            #CLASS WEIGHTS --> get train distributions before the application of undersampling
+            weights_y_train = config_func.decode_array(y_train)
+            class_weights = class_weight.compute_class_weight('balanced',
+                                                               numpy.unique(weights_y_train),
+                                                               weights_y_train)
 
             es_callback = EarlyStopping(monitor='val_loss', patience=3)
-            decrease_callback = ReduceLROnPlateau(monitor='val_loss',
+            decrease_callback = ReduceLROnPlateau(monitor='loss',
                                                         patience=1,
                                                         factor=0.7,
                                                         mode='min',
@@ -200,12 +209,6 @@ class ResNet(Model.Model):
                                                         verbose=1,
                                                         min_lr=0.000001)
 
-            #CLASS WEIGHTS
-            weights_y_train = config_func.decode_array(y_train)
-            class_weights = class_weight.compute_class_weight('balanced',
-                                                               numpy.unique(weights_y_train),
-                                                               weights_y_train)
-
             if train_generator is None: #NO DATA AUGMENTATION
 
                 history = model.fit(
@@ -216,7 +219,7 @@ class ResNet(Model.Model):
                     validation_data=(self.data.X_val, self.data.y_val),
                     shuffle=True,
                     callbacks=[es_callback, decrease_callback, decrease_callback2],
-                    class_weight=config.class_weights,
+                    class_weight=class_weights,
                     verbose=config.TRAIN_VERBOSE
                 )
 
@@ -230,7 +233,7 @@ class ResNet(Model.Model):
                 epochs=config.EPOCHS,
                 steps_per_epoch=X_train.shape[0] / args[0],
                 shuffle=True,
-                class_weight=config.class_weights,
+                class_weight=class_weights,
                 verbose=config.TRAIN_VERBOSE,
                 callbacks= [es_callback, decrease_callback, decrease_callback2]
             )

@@ -5,11 +5,11 @@ import itertools
 counter_iterations = itertools.count(start=0, step=1)
 
 # image dimensions
-WIDTH = 80
-HEIGHT = 80
+WIDTH = 128
+HEIGHT = 128
 CHANNELS = 3
 
-STANDARDIZE_AXIS_CHANNELS = (0,1,2,3)
+STANDARDIZE_AXIS_CHANNELS = (0,1,2)
 NUMBER_CLASSES = 7
 
 ## FILES
@@ -51,8 +51,8 @@ RELU_FUNCTION = "relu"
 SOFTMAX_FUNCTION = "softmax"
 SIGMOID_FUNCTION = "sigmoid"
 
-VALIDATION_SPLIT = 0.2
-TEST_SPLIT = 0.25
+VALIDATION_SPLIT = 0.15 # 15%
+TEST_SPLIT = 0.2353 # 20%
 RANDOM_STATE = 0
 
 LOSS_BINARY = "binary_crossentropy"
@@ -95,6 +95,7 @@ GA_OPTIMIZER = "GA"
 ALEX_NET = "ALEXNET"
 VGG_NET = "VGGNET"
 RES_NET = "RESNET"
+DENSE_NET = "DENSENET"
 U_NET = "UNET"
 
 FLAG_SEGMENT_IMAGES = 0
@@ -124,8 +125,8 @@ ERROR_ON_UNET_STRATEGY = "\nError on U-Net strategy applying"
 TOPOLOGY_FLAG = 0 # 0 - GBest , 1 - LBest
 PARTICLES = 2
 ITERATIONS = 2
-gbestOptions = {'w' : 0.9, 'c1' : 0.7, 'c2' : 0.7}
-lbestOptions = {'w' : 0.9, 'c1' : 0.7, 'c2' : 0.7, 'k' : 4, 'p' : 2}
+gbestOptions = {'w' : 0.7, 'c1' : 1.4, 'c2' : 1.4}
+lbestOptions = {'w' : 0.7, 'c1' : 1.4, 'c2' : 1.4, 'k' : 2, 'p' : 2}
 
 #GA OPTIONS
 TOURNAMENT_SIZE = 100
@@ -150,17 +151,39 @@ class_weights={
     2: 1.5, # bkl
     3: 3.0, # df
     4: 3.0, # mel # Try to make the model more sensitive to Melanoma.
-    5: 1.2, # nv
-    6: 1.2, # vasc
+    5: 1.0, # nv
+    6: 1.0, # vasc
+}
+
+class_sampling={ # oversampling
+    0: 2179, # akiec
+    1: 2179, # bcc
+    2: 2179, # bkl
+    3: 2179, # df
+    4: 2179, # mel # Try to make the model more sensitive to Melanoma.
+    5: 4358, # nv
+    6: 2179, # vasc
+}
+
+class_sampling2={
+    0: 213,  # akiec
+    1: 334,  # bcc
+    2: 714,  # bkl
+    3: 75,  # df
+    4: 723,  # mel # Try to make the model more sensitive to Melanoma.
+    5: 2179,  # nv
+    6: 92,  # vasc
 }
 
 # PSO BOUNDS LIMITS
-MAX_VALUES_LAYERS_ALEX_NET = [3, 4, 128, 50, 3, 128, 56] # nº of normal conv's, nº of stack cnn layers, nº of feature maps of initial conv, growth rate, nº neurons of FCL layer and batch size
-MIN_VALUES_LAYERS_ALEX_NET = [0, 1, 8, 0, 1, 14, 6]
-MAX_VALUES_LAYERS_VGG_NET = [7, 128, 50, 3, 128, 56] # nº of stack cnn layers, nº of feature maps of initial conv, growth rate, nº neurons of FCL layer and batch size
-MIN_VALUES_LAYERS_VGG_NET = [1, 8, 0, 1, 14, 6]
-MAX_VALUES_LAYERS_RESNET_NET = [80, 6, 3, 50, 56] # number of filters of first conv layer, number of conv+identity blocks, growth rate and batch size
-MIN_VALUES_LAYERS_RES_NET = [1, 1, 1, 0, 6]
+MAX_VALUES_LAYERS_ALEX_NET = [3.99, 3.99, 96, 48, 2.99, 96, 64] # nº of normal conv's, nº of stack cnn layers, nº of feature maps of initial conv, growth rate, nº neurons of FCL layer and batch size
+MIN_VALUES_LAYERS_ALEX_NET = [1, 1, 4, 0, 1, 14, 6]
+MAX_VALUES_LAYERS_VGG_NET = [7.99, 96, 48, 2.99, 72, 64] # nº of stack cnn layers, nº of feature maps of initial conv, growth rate, nº neurons of FCL layer and batch size
+MIN_VALUES_LAYERS_VGG_NET = [2, 4, 0, 1, 14, 6]
+MAX_VALUES_LAYERS_RESNET_NET = [96, 5.99, 2.99, 48, 64] # number of filters of first conv layer, number of conv+identity blocks, growth rate and batch size
+MIN_VALUES_LAYERS_RES_NET = [4, 1, 0, 0, 6]
+MAX_VALUES_LAYERS_DENSE_NET = [96, 5.99, 6.99, 24, 1, 64] # nº of initial filters, nº of dense blocks, nº of composite blocks, growth rate, compression rate and batch size
+MIN_VALUES_LAYERS_DENSE_NET = [4, 1, 2, 0, 0.1, 6]
 
 #FILENAME POSITION PSO VARIATION
 POS_VAR_LOWER = 'particlesPso.mp4'
@@ -197,6 +220,14 @@ pso_init_args_resnet = (
     5,  # number of filters of first conv layer, number of conv+identity blocks, nº of identity blocks, growth rate and batch size
     np.array(MIN_VALUES_LAYERS_RES_NET),
     np.array(MAX_VALUES_LAYERS_RESNET_NET)  # superior bound limits for dimensions
+)
+
+pso_init_args_densenet = (
+    PARTICLES,  # number of individuals
+    ITERATIONS,  # iterations
+    6,  # dimensions (init Conv Feature Maps, number of blocks, number cnn layers on blocks, growth rate, comprension rate and batch size)
+    np.array(MIN_VALUES_LAYERS_DENSE_NET), # lower bound limits for dimensions
+    np.array(MAX_VALUES_LAYERS_DENSE_NET)  # superior bound limits for dimensions
 )
 
 ## verbose and summary options on build and train
