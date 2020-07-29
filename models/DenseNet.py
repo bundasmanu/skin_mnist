@@ -61,7 +61,7 @@ class DenseNet(Model.Model):
 
         x = BatchNormalization(axis=3)(inputs)
         x = Activation(config.RELU_FUNCTION)(x)
-        num_feature_maps = inputs.shape[1]
+        num_feature_maps = inputs.shape[3]
 
         x = Conv2D(filters=np.floor( compresion_rate * num_feature_maps ).astype( np.int ),
                                    kernel_size=(1, 1), use_bias=False, padding=config.SAME_PADDING, kernel_initializer=he_uniform(config.HE_SEED),
@@ -87,7 +87,7 @@ class DenseNet(Model.Model):
             for i in range(num_layers):
                 conv_outputs = self.H(inputs, initFilter)
                 inputs = concatenate([conv_outputs, inputs])
-                initFilter += growth_rate
+                #initFilter += growth_rate --> sometimes DenseNet can increase number of filters between composite blocks (*2) --> but i don't use this approach
             return inputs
 
         except:
@@ -124,7 +124,6 @@ class DenseNet(Model.Model):
                 x = self.dense_block(x, args[2], args[3], args[3]) # initial number of filters is equal to growth rate, and all conv's uses all same number of filters: growth rate
                 if i < (args[1] - 1):
                     x = self.transition(x, args[4]) ## in last block (final step doesn't apply transition logic, global average pooling, made this
-                    nFilters = int(nFilters * args[4])
 
             x = BatchNormalization(axis=3) (x)
             x = Activation(config.RELU_FUNCTION)(x)

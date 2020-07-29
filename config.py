@@ -123,8 +123,8 @@ ERROR_ON_UNET_STRATEGY = "\nError on U-Net strategy applying"
 
 #PSO OPTIONS
 TOPOLOGY_FLAG = 0 # 0 - GBest , 1 - LBest
-PARTICLES = 2
-ITERATIONS = 2
+PARTICLES = 20
+ITERATIONS = 10
 gbestOptions = {'w' : 0.7, 'c1' : 1.4, 'c2' : 1.4}
 lbestOptions = {'w' : 0.7, 'c1' : 1.4, 'c2' : 1.4, 'k' : 2, 'p' : 2}
 
