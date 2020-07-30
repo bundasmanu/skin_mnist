@@ -182,8 +182,8 @@ MAX_VALUES_LAYERS_VGG_NET = [7.99, 96, 48, 2.99, 72, 64] # nº of stack cnn laye
 MIN_VALUES_LAYERS_VGG_NET = [2, 4, 0, 1, 14, 6]
 MAX_VALUES_LAYERS_RESNET_NET = [96, 5.99, 2.99, 48, 64] # number of filters of first conv layer, number of conv+identity blocks, growth rate and batch size
 MIN_VALUES_LAYERS_RES_NET = [4, 1, 0, 0, 6]
-MAX_VALUES_LAYERS_DENSE_NET = [96, 5.99, 6.99, 24, 1, 64] # nº of initial filters, nº of dense blocks, nº of composite blocks, growth rate, compression rate and batch size
-MIN_VALUES_LAYERS_DENSE_NET = [4, 1, 2, 0, 0.1, 6]
+MAX_VALUES_LAYERS_DENSE_NET = [96, 5.99, 6.99, 32, 1, 64] # nº of initial filters, nº of dense blocks, nº of composite blocks, growth rate, compression rate and batch size
+MIN_VALUES_LAYERS_DENSE_NET = [4, 1, 2, 2, 0.1, 6]
 
 #FILENAME POSITION PSO VARIATION
 POS_VAR_LOWER = 'particlesPso.mp4'
