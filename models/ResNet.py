@@ -195,7 +195,7 @@ class ResNet(Model.Model):
                                                                numpy.unique(weights_y_train),
                                                                weights_y_train)
 
-            es_callback = EarlyStopping(monitor='val_loss', patience=3)
+            es_callback = EarlyStopping(monitor='val_loss', patience=2)
             decrease_callback = ReduceLROnPlateau(monitor='loss',
                                                         patience=1,
                                                         factor=0.7,

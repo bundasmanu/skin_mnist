@@ -177,13 +177,13 @@ class_sampling2={
 
 # PSO BOUNDS LIMITS
 MAX_VALUES_LAYERS_ALEX_NET = [3.99, 3.99, 96, 48, 2.99, 96, 64] # nº of normal conv's, nº of stack cnn layers, nº of feature maps of initial conv, growth rate, nº neurons of FCL layer and batch size
-MIN_VALUES_LAYERS_ALEX_NET = [1, 1, 4, 0, 1, 14, 6]
+MIN_VALUES_LAYERS_ALEX_NET = [1, 1, 4, 0, 1, 14, 12]
 MAX_VALUES_LAYERS_VGG_NET = [7.99, 96, 48, 2.99, 72, 64] # nº of stack cnn layers, nº of feature maps of initial conv, growth rate, nº neurons of FCL layer and batch size
-MIN_VALUES_LAYERS_VGG_NET = [2, 4, 0, 1, 14, 6]
+MIN_VALUES_LAYERS_VGG_NET = [2, 4, 0, 1, 14, 12]
 MAX_VALUES_LAYERS_RESNET_NET = [96, 5.99, 2.99, 48, 64] # number of filters of first conv layer, number of conv+identity blocks, growth rate and batch size
-MIN_VALUES_LAYERS_RES_NET = [4, 1, 0, 0, 6]
+MIN_VALUES_LAYERS_RES_NET = [4, 1, 0, 0, 12]
 MAX_VALUES_LAYERS_DENSE_NET = [96, 5.99, 6.99, 32, 1, 64] # nº of initial filters, nº of dense blocks, nº of composite blocks, growth rate, compression rate and batch size
-MIN_VALUES_LAYERS_DENSE_NET = [4, 1, 2, 2, 0.1, 6]
+MIN_VALUES_LAYERS_DENSE_NET = [4, 1, 2, 2, 0.1, 12]
 
 #FILENAME POSITION PSO VARIATION
 POS_VAR_LOWER = 'particlesPso.mp4'

@@ -195,6 +195,8 @@ def normalize(X_train, X_val, X_test):
 
         mean = np.mean(X_train, axis=config.STANDARDIZE_AXIS_CHANNELS) #STANDARDIZE BY CHANNELS
         std = np.std(X_train, axis=config.STANDARDIZE_AXIS_CHANNELS) #STANDARDIZE BY CHANNELS
+        print(mean)
+        print(std)
         X_train = (X_train-mean)/(std+1e-7)
         X_val = (X_val-mean)/(std+1e-7)
         X_test = (X_test-mean)/(std+1e-7)

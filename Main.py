@@ -149,20 +149,20 @@ def main():
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
     # definition of args to pass to template_method (conv's number of filters, dense neurons and batch size)
     alex_args = (
-        2, # number of normal convolutional layer (+init conv)
-        2, # number of stack cnn layers
-        16, # number of feature maps of initial conv layer
-        16, # growth rate
-        1, # number of FCL Layers
-        16, # number neurons of Full Connected Layer
-        config.BATCH_SIZE_ALEX_AUG # batch size
+        1, # number of normal convolutional layer (+init conv)
+        3, # number of stack cnn layers
+        26, # number of feature maps of initial conv layer
+        2, # growth rate
+        2, # number of FCL Layers
+        47, # number neurons of Full Connected Layer
+        8# batch size
     )
 
     # APPLY BUILD, TRAIN AND PREDICT
-    #model, predictions, history = alexNet.template_method(*alex_args)
+    model, predictions, history = alexNet.template_method(*alex_args)
 
     ## PLOT FINAL RESULTS
-    #config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
+    config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
 
     ## ---------------------------VGGNET APPLICATION ------------------------------------
 
@@ -243,9 +243,9 @@ def main():
     densenet.addStrategy(oversampling)
     densenet.addStrategy(data_augment)
 
-    model, predictions, history = densenet.template_method(*valuesLayers)
+    #model, predictions, history = densenet.template_method(*valuesLayers)
 
-    config_func.print_final_results(data_obj.y_test, predictions, history)
+    #config_func.print_final_results(data_obj.y_test, predictions, history)
 
     ## --------------------------- ENSEMBLE OF MODELS ------------------------------------
 
