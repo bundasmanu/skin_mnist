@@ -5,7 +5,7 @@ from glob import glob
 import numpy as np
 import keras
 import random
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, balanced_accuracy_score
 import matplotlib.pyplot as plt
 import itertools
 import glob
@@ -88,7 +88,11 @@ def getDataFromImages(dataframe : pandas.DataFrame, size):
         Y = []
 
         d = dict(enumerate(dataframe.dx.cat.categories))
+        #print(d)
         numeric_targets = dataframe.dx.cat.codes.values
+        #unique, counts = numpy.unique(numeric_targets, return_counts=True)
+        #samples_per_label = dict(zip(unique, counts))
+        #print(samples_per_label)
 
         if size > number_images:
             raise
@@ -477,6 +481,7 @@ def print_final_results(y_test, predictions, history, dict=False):
         print(report)
         plt.figure()
         plot_confusion_matrix(confusion_mat, config.DICT_TARGETS)
+        print(balanced_accuracy_score(y_test_decoded, predictions))
 
     except:
         raise
