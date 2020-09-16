@@ -6,6 +6,7 @@ import pandas as pd
 import config
 import config_func
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import balanced_accuracy_score
 import Data
 import matplotlib.pyplot as plt
 import cv2
@@ -130,6 +131,7 @@ def main():
     model_fact = ModelFactory.ModelFactory()
 
     ## STRATEGIES OF TRAIN INSTANCES
+    undersampling = UnderSampling.UnderSampling()
     oversampling = OverSampling.OverSampling()
     data_augment = DataAugmentation.DataAugmentation()
 
@@ -149,20 +151,21 @@ def main():
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
     # definition of args to pass to template_method (conv's number of filters, dense neurons and batch size)
     alex_args = (
-        2, # number of normal convolutional layer (+init conv)
-        2, # number of stack cnn layers
-        16, # number of feature maps of initial conv layer
-        16, # growth rate
+        3, # number of normal convolutional layer (+init conv)
+        1, # number of stack cnn layers
+        73, # number of feature maps of initial conv layer
+        23, # growth rate
         1, # number of FCL Layers
-        16, # number neurons of Full Connected Layer
-        config.BATCH_SIZE_ALEX_AUG# batch size
+        65, # number neurons of Full Connected Layer
+        12# batch size
     )
 
     # APPLY BUILD, TRAIN AND PREDICT
-    model, predictions, history = alexNet.template_method(*alex_args)
+    #model, predictions, history = alexNet.template_method(*alex_args)
+    #alexNet.save(model, config.ALEX_NET_WEIGHTS_FILE)
 
     ## PLOT FINAL RESULTS
-    config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
+    #config_func.print_final_results(data_obj.y_test, predictions, history, dict=False)
 
     ## ---------------------------VGGNET APPLICATION ------------------------------------
 
@@ -178,12 +181,12 @@ def main():
 
     # VALUES TO POPULATE ON CONV AND DENSE LAYERS
     vgg_args = (
-        5,  # number of stack cnn layers (+ init stack)
-        32,  # number of feature maps of initial conv layer
-        12,  # growth rate
+        4,  # number of stack cnn layers (+ init stack)
+        71,  # number of feature maps of initial conv layer
+        18,  # growth rate
         1, # number of FCL Layers
-        16,  # number neurons of Full Connected Layer
-        config.BATCH_SIZE_ALEX_AUG  # batch size
+        61,  # number neurons of Full Connected Layer
+        12 # batch size
     )
 
     # APPLY BUILD, TRAIN AND PREDICT
@@ -207,11 +210,11 @@ def main():
 
     # definition of args to pass to template_method (conv's number of filters, dense neurons and batch size)
     resnet_args = (
-        16,  # number of filters of initial CNN layer
+        56,  # number of filters of initial CNN layer
         4,  # number of consecutive conv+identity blocks
-        1, # number of identity block in each (conv+identity) block
-        16,  # growth rate
-        config.BATCH_SIZE_ALEX_AUG,  # batch size
+        2, # number of identity block in each (conv+identity) block
+        42,  # growth rate
+        12,  # batch size
     )
 
     # APPLY BUILD, TRAIN AND PREDICT
@@ -230,12 +233,12 @@ def main():
     )
 
     valuesLayers = (
-        24,  # initial number of Feature Maps
+        59,  # initial number of Feature Maps
         4,  # number of dense blocks
-        2,  # number of layers in each block
-        12,  # growth rate
-        0.5,  # compression rate
-        config.BATCH_SIZE_ALEX_AUG  # batch size
+        5,  # number of layers in each block
+        11,  # growth rate
+        1.0,  # compression rate
+        21  # batch size
     )
 
     densenet = model_fact.getModel(config.DENSE_NET, data_obj, *numberLayers)
@@ -243,27 +246,40 @@ def main():
     densenet.addStrategy(oversampling)
     densenet.addStrategy(data_augment)
 
+
     #model, predictions, history = densenet.template_method(*valuesLayers)
+    #densenet.save(model, config.DENSE_NET_WEIGHTS_FILE)
 
     #config_func.print_final_results(data_obj.y_test, predictions, history)
 
     ## --------------------------- ENSEMBLE OF MODELS ------------------------------------
 
     # get weights of all methods from files
-    # alexNet = load_model(config.ALEX_NET_WEIGHTS_FILE)
-    # vggnet = load_model(config.VGG_NET_WEIGHTS_FILE)
-    # resnet = load_model(config.RES_NET_WEIGHTS_FILE)
-    #
-    # models = [alexNet, vggnet, resnet]
-    #
-    # ##call ensemble method
-    # ensemble_model = config_func.ensemble(models=models)
-    # predictions = ensemble_model.predict(data_obj.X_test)
-    # argmax_preds = np.argmax(predictions, axis=1)  # BY ROW, BY EACH SAMPLE
-    # argmax_preds = keras.utils.to_categorical(argmax_preds)
-    #
-    # ## print final results
-    # config_func.print_final_results(data_obj.y_test, argmax_preds, history=None, dict=False)
+    alexNet2 = load_model(config.ALEX_NET_WEIGHTS_FILE)
+    vggnet2 = load_model(config.VGG_NET_WEIGHTS_FILE)
+    #vggnet2.name = 'model_2'
+    #vggnet.save(vggnet2, config.VGG_NET_WEIGHTS_FILE)
+    resnet2 = load_model(config.RES_NET_WEIGHTS_FILE)
+    #resnet2.name = 'model_3'
+    #resnet.save(resnet2, config.RES_NET_WEIGHTS_FILE)
+    densenet2 = load_model(config.DENSE_NET_WEIGHTS_FILE)
+    #densenet2.name = 'model_4'
+    #densenet.save(densenet2, config.DENSE_NET_WEIGHTS_FILE)
+
+    models = [alexNet2, vggnet2, resnet2, densenet2]
+
+    ##call ensemble method
+    ensemble_model = config_func.ensemble(models=models)
+    predictions = ensemble_model.predict(data_obj.X_test)
+    argmax_preds = np.argmax(predictions, axis=1)  # BY ROW, BY EACH SAMPLE
+    argmax_preds = keras.utils.to_categorical(argmax_preds)
+
+    ## print final results
+    config_func.print_final_results(data_obj.y_test, argmax_preds, history=None, dict=True)
+
+    # save ensemble model
+    ensemble_model.save(config.ENSEMBLE_ALL)
+    del ensemble_model
 
     ## --------------------------- PSO ------------------------------------------------
 

@@ -66,7 +66,7 @@ VALIDATION_ACCURACY = "val_accuracy"
 
 BATCH_SIZE_ALEX_NO_AUG = 32
 BATCH_SIZE_ALEX_AUG = 32
-EPOCHS = 16
+EPOCHS = 30
 MULTIPROCESSING = True
 SHUFFLE = True
 
@@ -137,9 +137,12 @@ MUTPB = 0.2
 ## weight load files
 UNET_WEIGHTS_100 = 'unet_100_epoch.h5'
 UNET_BUNET_WEIGHTS = 'weight_isic18.hdf5'
-VGG_NET_WEIGHTS_FILE = 'vggnet_weights.h5'
-ALEX_NET_WEIGHTS_FILE = 'alexnet_weights.h5'
-RES_NET_WEIGHTS_FILE = 'resnet_weights.h5'
+VGG_NET_WEIGHTS_FILE = 'vggnet_gbest_oficial.h5'
+ALEX_NET_WEIGHTS_FILE = 'alexnet_gbest_oficial.h5'
+RES_NET_WEIGHTS_FILE = 'resnet_gbest_oficial.h5'
+DENSE_NET_WEIGHTS_FILE = 'densenet_gbest_oficial.h5'
+ENSEMBLE_ALL = "ensemble_all.h5"
+ENSEMBLE_BEST = "ensemble_best.h5"
 
 ## u-net backbone
 BACKBONE = 'resnet34'
@@ -171,7 +174,7 @@ class_sampling2={
     2: 714,  # bkl
     3: 75,  # df
     4: 723,  # mel # Try to make the model more sensitive to Melanoma.
-    5: 2179,  # nv
+    5: 500,  # nv
     6: 92,  # vasc
 }
 
@@ -231,5 +234,5 @@ pso_init_args_densenet = (
 )
 
 ## verbose and summary options on build and train
-TRAIN_VERBOSE = 1 # 0 - no info, 1- info, 2- partial info
+TRAIN_VERBOSE = 0 # 0 - no info, 1- info, 2- partial info
 BUILD_SUMMARY = 1 # 0 - no summary, 1- summary
