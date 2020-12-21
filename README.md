@@ -4,7 +4,7 @@ The Skin MNIST dataset is a classification problem composed of dermatological im
 Unlike other datasets, this one promotes the study of several types of skin lesions, thus allowing a less generalist diagnosis, and allows a more incisive study on the several types of skin lesions that a patient might suffer.
 
 ## Data
-This benchmark consists of 10015 images that are the result of an intensive study developed by various entities.  
+This benchmark consists of 10015 images that are the result of an intensive study developed by various entities. The samples are represented in RGB format and have dimensions 600*450 (length and width respectively).  
 This benchmark promotes the study of seven different types of skin lesions:  
 * Actinic Keratoses;
 * Basal cell carcinoma;
