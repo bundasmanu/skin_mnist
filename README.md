@@ -28,6 +28,7 @@ The main limitations of this benchmarks are:
 * Application of the ensemble technique to improve the performance obtained, individually, by the architectures (combining the probabilistic distributions of the different architectures - average);
 
 ## Results
+The table represented below includes the results related to the optimization of each architecture, and the user can download the consequent model obtained.  
 | Model | Memory | Macro Average F1Score | Macro Average Recall | Accuracy | File | 
 |---|---|---|---|---|---|
 | AlexNet | 7,8 MB | 65.4% | 63.5% | 81.1% | [AlexNet h5 File](https://github.com/bundasmanu/ProjetoMestrado/blob/master/arquiteturas_otimizadas/Skin_MNIST/alexnet_gbest_oficial.h5?raw=true) |
