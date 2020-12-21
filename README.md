@@ -39,5 +39,16 @@ The table represented below includes the results related to the optimization of 
 | Ensemble Average All Models | 21,8 MB | 68.5% | 65.2%  | 83.0% | [Ensemble All Models h5 File](https://github.com/bundasmanu/ProjetoMestrado/blob/master/arquiteturas_otimizadas/Skin_MNIST/ensemble_all.h5?raw=true) |
 | Ensemble Average Alex + VGG + Dense | 17,5 MB | 69.2% | 66.5%  | 83.1% | [Ensemble Best Combination h5 File](https://github.com/bundasmanu/ProjetoMestrado/blob/master/arquiteturas_otimizadas/Skin_MNIST/ensemble_best.h5?raw=true) |
 
+## How can I use it
+1. Clone Project: git clone 
+2. Install requirements: pip install -r requirements.txt
+3. Check config.py file, and redraw the configuration variables used to read, obtain and divide the data of the problem, and variables that are used for construction, training and optimization of the architectures.
+  * Samples of problem are readed from ../input/images/*.jpg folder --> this is an example that you need to pay attention and redraw before use project;
+
 ## Data Acess
 https://www.kaggle.com/kmader/skin-cancer-mnist-ham10000
+
+### Licence
+
+GPL-3.0 License  
+I am open to new ideas and improvements to the current repository. However, until the defense of my Project report, I will not accept pull request's.
