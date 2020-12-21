@@ -45,7 +45,7 @@ The table represented below includes the results related to the optimization of 
 3. Check config.py file, and redraw the configuration variables used to read, obtain and divide the data of the problem, and variables that are used for construction, training and optimization of the architectures.
    * Samples of problem are readed from ../input/images/*.jpg folder --> this is an example that you need to pay attention and redraw before use project;
 
-## Data Acess
+## Data Access
 https://www.kaggle.com/kmader/skin-cancer-mnist-ham10000
 
 ### Licence
