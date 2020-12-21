@@ -15,7 +15,7 @@ This benchmark promotes the study of seven different types of skin lesions:
 * Vascular skin lesions;
 
 ## Limitations of this dataset
-The main limitations of this benchmarks are:
+The main limitations of this benchmark are:
 * High unbalanced classes (Sample distributions between classes are very disproportional);
 * Small number of samples;
 * Problem with high complexity;
