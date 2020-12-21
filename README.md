@@ -19,6 +19,7 @@ The main limitations of this benchmarks are:
 * High unbalanced classes (Sample distributions between classes are very disproportional);
 * Small number of samples;
 * Problem with high complexity;
+* Samples with high dimensions;
 
 ## What this project offers
 * Disponibilization of a Jupyter notebook with problem pre-analysis;
